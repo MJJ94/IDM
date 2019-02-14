@@ -1,3 +1,5 @@
 .classpath
 /bin/
 .prefs
+*.class
+*.xtendbin
