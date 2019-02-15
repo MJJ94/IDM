@@ -8,7 +8,6 @@ import fr.istic.videoGen.VideoGeneratorModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Stack;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtext.xbase.lib.Conversions;
@@ -94,13 +93,13 @@ public class VideoGenTest1XtendVersion {
     int _size_3 = listAlt.size();
     final int resultNumber = (_multiply * _size_3);
     ArrayList<ArrayList<Media>> result = this.initResult(listMan, resultNumber);
-    ArrayList<ArrayList<OptionalMedia>> optionelCombinations = new ArrayList<ArrayList<OptionalMedia>>();
-    this.recursive_combinations_start(listOp, optionelCombinations);
+    ArrayList<ArrayList<String>> optionelCombinations = new ArrayList<ArrayList<String>>();
     int j = 0;
     int i = 0;
     int _size_4 = result.size();
     String _plus_3 = ("size = " + Integer.valueOf(_size_4));
     InputOutput.<String>println(_plus_3);
+    this.recursive_combinations_start();
     while ((j < resultNumber)) {
       {
         for (final AlternativesMedia alt : listAlt) {
@@ -110,51 +109,11 @@ public class VideoGenTest1XtendVersion {
             boolean _lessThan = (i < _size_5);
             if (_lessThan) {
               InputOutput.<Integer>println(Integer.valueOf(optionelCombinations.get(i).size()));
-              result.get(j).addAll(optionelCombinations.get(i));
             }
             j++;
           }
         }
         i++;
-      }
-    }
-    return result;
-  }
-  
-  public ArrayList<ArrayList<Media>> insertOp(final ArrayList<OptionalMedia> listOp, final int size, final ArrayList<ArrayList<Media>> resultWithMan) {
-    ArrayList<ArrayList<Media>> result = new ArrayList<ArrayList<Media>>(resultWithMan);
-    Stack<OptionalMedia> listOpTemp = new Stack<OptionalMedia>();
-    listOpTemp.addAll(listOp);
-    int i = 0;
-    int j = 0;
-    int c = 0;
-    OptionalMedia head = null;
-    ArrayList<ArrayList<OptionalMedia>> used = new ArrayList<ArrayList<OptionalMedia>>();
-    Stack<OptionalMedia> tail = new Stack<OptionalMedia>();
-    ArrayList<OptionalMedia> combo = new ArrayList<OptionalMedia>();
-    while ((j < resultWithMan.size())) {
-      {
-        boolean _isEmpty = listOpTemp.isEmpty();
-        boolean _not = (!_isEmpty);
-        if (_not) {
-          head = listOpTemp.pop();
-          tail.addAll(listOpTemp);
-        }
-        combo.add(head);
-        if ((i == 0)) {
-          combo.addAll(tail);
-        }
-        boolean _contain = this.contain(used, combo);
-        boolean _not_1 = (!_contain);
-        if (_not_1) {
-          while ((c < size)) {
-            {
-              result.get(j).addAll(combo);
-              c++;
-              j++;
-            }
-          }
-        }
       }
     }
     return result;
@@ -189,7 +148,7 @@ public class VideoGenTest1XtendVersion {
     return result;
   }
   
-  public void recursive_combinations(final ArrayList<OptionalMedia> combination, final int ndx, final ArrayList<OptionalMedia> elems, final ArrayList<ArrayList<OptionalMedia>> result) {
+  public void recursive_combinations(final ArrayList<String> combination, final int ndx, final ArrayList<String> elems, final ArrayList<ArrayList<String>> result) {
     int _length = ((Object[])Conversions.unwrapArray(elems, Object.class)).length;
     boolean _equals = (ndx == _length);
     if (_equals) {
@@ -202,13 +161,61 @@ public class VideoGenTest1XtendVersion {
     }
   }
   
-  public void recursive_combinations_start(final ArrayList<OptionalMedia> elems, final ArrayList<ArrayList<OptionalMedia>> result) {
-    final ArrayList<OptionalMedia> combination = new ArrayList<OptionalMedia>();
-    this.recursive_combinations(combination, 0, elems, result);
-    for (final ArrayList<OptionalMedia> l : result) {
-      int _size = l.size();
-      String _plus = ("combSize: " + Integer.valueOf(_size));
-      InputOutput.<String>println(_plus);
+  public ArrayList<ArrayList<String>> insertOp(final ArrayList<String> lOp) {
+    int size = Double.valueOf(Math.pow(2, lOp.size())).intValue();
+    int sizePreced = (size / 2);
+    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+    int i = 0;
+    int j = 1;
+    int initSizePreced = sizePreced;
+    int initI = 0;
+    while ((i < size)) {
+      {
+        ArrayList<String> _arrayList = new ArrayList<String>();
+        result.add(_arrayList);
+        i++;
+      }
+    }
+    i = 0;
+    for (final String elem : lOp) {
+      {
+        i = 0;
+        initI = i;
+        sizePreced = (size / (j * 2));
+        initSizePreced = sizePreced;
+        InputOutput.<String>println(((elem + " ") + Integer.valueOf(sizePreced)));
+        while (((i < size) && (sizePreced < size))) {
+          {
+            while ((i < sizePreced)) {
+              {
+                result.get(i).add(elem);
+                i++;
+              }
+            }
+            int _initI = initI;
+            initI = (_initI + (initSizePreced * 2));
+            i = initI;
+            InputOutput.<String>println(("i = " + Integer.valueOf(i)));
+            sizePreced = ((initSizePreced * 2) + sizePreced);
+            InputOutput.<String>println(("sizePreced = " + Integer.valueOf(sizePreced)));
+          }
+        }
+        int _j = j;
+        j = (_j * 2);
+      }
+    }
+    return result;
+  }
+  
+  public void recursive_combinations_start() {
+    final ArrayList<String> combination = new ArrayList<String>();
+    combination.add("A");
+    combination.add("B");
+    combination.add("C");
+    combination.add("D");
+    final ArrayList<ArrayList<String>> result = this.insertOp(combination);
+    for (final ArrayList<String> l : result) {
+      InputOutput.<String>println(("l:" + l));
     }
   }
 }

@@ -62,18 +62,17 @@ class VideoGenTest1XtendVersion {
 
 		val resultNumber = (listOp.size() * 2) * listAlt.size();
 		var result = initResult(listMan, resultNumber)
-		var optionelCombinations = new ArrayList<ArrayList<OptionalMedia>>();
-		recursive_combinations_start(listOp, optionelCombinations);
+		var optionelCombinations = new ArrayList<ArrayList<String>>();
+//		recursive_combinations_start(new ArrayList<String>, optionelCombinations);
 		var j = 0;
 		var i = 0;
 		println("size = " + result.size())
-
+		recursive_combinations_start()
 		while (j < resultNumber) {
 			for (AlternativesMedia alt : listAlt) {
 				result.get(j).add(alt);
 				if (i < optionelCombinations.size()) {
 					println(optionelCombinations.get(i).size())
-					result.get(j).addAll(optionelCombinations.get(i))
 				}
 //				println(result.get(j).size())
 				j++;
@@ -83,39 +82,6 @@ class VideoGenTest1XtendVersion {
 			i++;
 		}
 
-		return result;
-	}
-
-	def ArrayList<ArrayList<Media>> insertOp(ArrayList<OptionalMedia> listOp, int size,
-		ArrayList<ArrayList<Media>> resultWithMan) {
-		var result = new ArrayList(resultWithMan);
-		var listOpTemp = new Stack<OptionalMedia>;
-		listOpTemp.addAll(listOp)
-		var i = 0;
-		var j = 0;
-		var c = 0;
-		var OptionalMedia head
-		var ArrayList<ArrayList<OptionalMedia>> used = new ArrayList;
-		var tail = new Stack<OptionalMedia>
-		var combo = new ArrayList<OptionalMedia>
-		while (j < resultWithMan.size()) {
-
-			if (!listOpTemp.isEmpty()) {
-				head = listOpTemp.pop()
-				tail.addAll(listOpTemp)
-			}
-			combo.add(head)
-			if (i == 0) {
-				combo.addAll(tail)
-			}
-			if (!contain(used, combo)) {
-				while (c < size) {
-					result.get(j).addAll(combo)
-					c++
-					j++
-				}
-			}
-		}
 		return result;
 	}
 
@@ -143,59 +109,63 @@ class VideoGenTest1XtendVersion {
 		return result;
 	}
 
-	def void recursive_combinations(ArrayList<OptionalMedia> combination, int ndx, ArrayList<OptionalMedia> elems,
-		ArrayList<ArrayList<OptionalMedia>> result) {
+	def void recursive_combinations(ArrayList<String> combination, int ndx, ArrayList<String> elems,
+		ArrayList<ArrayList<String>> result) {
 		if (ndx == elems.length) { // (reached end of list after selecting/not selecting) 
 			result.add(combination)
 		} else { // (include element at ndx) 
 			combination.add(elems.get(ndx));
-			recursive_combinations(combination, ndx + 1, elems, result); // (don't include element at ndx) 
+			recursive_combinations(combination, ndx + 1, elems, result);
+			// (don't include element at ndx) 
 			combination.remove(elems.get(ndx));
 			recursive_combinations(combination, ndx + 1, elems, result);
 		}
 	}
 
-	def void recursive_combinations_start(ArrayList<OptionalMedia> elems, ArrayList<ArrayList<OptionalMedia>> result) {
-		val ArrayList<OptionalMedia> combination = new ArrayList<OptionalMedia>();
-		recursive_combinations(combination, 0, elems, result);
-		for (ArrayList<OptionalMedia> l : result) {
-			println("combSize: " + l.size())
-
+	def ArrayList<ArrayList<String>> insertOp(ArrayList<String> lOp) {
+		var size = (Math.pow(2, lOp.size())).intValue;
+		var sizePreced = size / 2;
+		var result = new ArrayList<ArrayList<String>>
+		var i = 0;
+		var j = 1;
+		var initSizePreced = sizePreced
+		var initI = 0;
+		while (i < size) {
+			result.add(new ArrayList<String>)
+			i++;
 		}
+		i = 0;
+		for (String elem : lOp) {
+			i = 0;
+			initI = i
+			sizePreced = size/(j*2)
+			initSizePreced = sizePreced
+			println(elem + " " + sizePreced)
+			while (i < size && sizePreced < size) {
+				while (i < sizePreced) {
+					result.get(i).add(elem)
+					i++;
+				}
+				initI += (initSizePreced * 2)
+				i = initI
+				println("i = " + i)
+				sizePreced = (initSizePreced * 2) + sizePreced   
+				println("sizePreced = " + sizePreced)
+			}
+			j *= 2
+		}
+		return result;
 	}
 
-//	@Test
-//	def void testLoadModelOld() {
-//
-//		val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI("specification.videogen"))
-//		assertNotNull(videoGen)
-//		for (Media m : videoGen.medias) {
-//			if (m instanceof MandatoryMedia) {
-//				val man = m as MandatoryMedia
-//				if (man.description instanceof VideoDescription) {
-//					val des = man.description as VideoDescription
-//					val f = new File(des.location)
-//					println(des.location + " " + f.length)
-//
-//				}
-//			} else if (m instanceof OptionalMedia) {
-//				val op = m as OptionalMedia
-//				if (op.description instanceof VideoDescription) {
-//					val des = op.description as VideoDescription
-//					val f = new File(des.location)
-//					println(des.location + " " + f.length)
-//
-//				}
-//			} else if (m instanceof AlternativesMedia) {
-//				val alt = m as AlternativesMedia
-//				for (MediaDescription malt : alt.medias) {
-//					if (malt instanceof VideoDescription) {
-//						val des = malt as VideoDescription
-//						val f = new File(des.location)
-//						println(des.location + " " + f.length)
-//					}
-//				}
-//			}
-//		}
-//	}
+	def void recursive_combinations_start() {
+		val ArrayList<String> combination = new ArrayList<String>();
+		combination.add("A")
+		combination.add("B")
+		combination.add("C")
+		combination.add("D")
+		val result = insertOp(combination)
+		for (ArrayList<String> l : result) {
+			println("l:" + l)
+		}
+	}
 }
