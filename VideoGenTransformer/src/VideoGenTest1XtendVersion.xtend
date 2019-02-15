@@ -13,14 +13,23 @@ import fr.istic.videoGen.MediaDescription
 import java.util.ArrayList
 import java.util.Stack
 import java.util.HashSet
+import java.util.HashMap
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.io.BufferedWriter
+import java.util.Date
+import java.io.FileWriter
+import java.io.IOException
 
 class VideoGenTest1XtendVersion {
 
 	@Test
 	def void testLoadModel() {
-		val listMan = new ArrayList<MandatoryMedia>();
-		val listOp = new ArrayList<OptionalMedia>();
-		val listAlt = new ArrayList<AlternativesMedia>();
+		val listMan = new ArrayList<String>();
+		val listOp = new ArrayList<String>();
+		val listAlt = new ArrayList<String>();
+		var mapSizes = new HashMap<String, Long>
+
 		val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI("specification.videogen"))
 		assertNotNull(videoGen)
 		for (Media m : videoGen.medias) {
@@ -30,7 +39,8 @@ class VideoGenTest1XtendVersion {
 					val des = man.description as VideoDescription
 					val f = new File(des.location)
 					println(des.location + " " + f.length)
-					listMan.add(man);
+					listMan.add(des.location);
+					mapSizes.put(des.location, f.length)
 				}
 			} else if (m instanceof OptionalMedia) {
 				val op = m as OptionalMedia
@@ -38,7 +48,8 @@ class VideoGenTest1XtendVersion {
 					val des = op.description as VideoDescription
 					val f = new File(des.location)
 					println(des.location + " " + f.length)
-					listOp.add(op);
+					listOp.add(des.location);
+					mapSizes.put(des.location, f.length)
 				}
 			} else if (m instanceof AlternativesMedia) {
 				val alt = m as AlternativesMedia
@@ -47,54 +58,45 @@ class VideoGenTest1XtendVersion {
 						val des = malt as VideoDescription
 						val f = new File(des.location)
 						println(des.location + " " + f.length)
-						listAlt.add(alt)
+						listAlt.add(des.location)
+						mapSizes.put(des.location, f.length)
 					}
 				}
 			}
 		}
 		val result = calculateVariants(listMan, listOp, listAlt)
+		generateCSV(result, mapSizes, listMan, listOp, listAlt)
 //		println(result.size())
 	}
 
-	def ArrayList calculateVariants(ArrayList<MandatoryMedia> listMan, ArrayList<OptionalMedia> listOp,
-		ArrayList<AlternativesMedia> listAlt) {
+	def ArrayList<ArrayList<String>> calculateVariants(ArrayList<String> listMan, ArrayList<String> listOp,
+		ArrayList<String> listAlt) {
 		println("listOp.size() = " + listOp.size() + " listAlt.size() = " + listAlt.size())
 
-		val resultNumber = (listOp.size() * 2) * listAlt.size();
-		var result = initResult(listMan, resultNumber)
-		var optionelCombinations = new ArrayList<ArrayList<String>>();
-//		recursive_combinations_start(new ArrayList<String>, optionelCombinations);
+		var opCombinations = insertOp(listOp)
+		var result = new ArrayList<ArrayList<String>>
 		var j = 0;
 		var i = 0;
-		println("size = " + result.size())
-		recursive_combinations_start()
-		while (j < resultNumber) {
-			for (AlternativesMedia alt : listAlt) {
+		for (ArrayList<String> l : opCombinations) {
+			for (String alt : listAlt) {
+				result.add(l)
+			}
+		}
+
+		for (ArrayList<String> l : result) {
+			for (String man : listMan) {
+				l.add(man)
+			}
+		}
+		while (j < result.size()) {
+			for (String alt : listAlt) {
 				result.get(j).add(alt);
-				if (i < optionelCombinations.size()) {
-					println(optionelCombinations.get(i).size())
-				}
-//				println(result.get(j).size())
 				j++;
-//				println("j " + j)
-//				println(i)
 			}
 			i++;
 		}
 
 		return result;
-	}
-
-	def boolean contain(ArrayList<ArrayList<OptionalMedia>> used, ArrayList<OptionalMedia> combo) {
-		var boolean compar = false;
-		for (ArrayList<OptionalMedia> l : used) {
-			println("l: " + l + " combo: " + combo)
-			compar = ((new HashSet<OptionalMedia>(l)).equals((new HashSet<OptionalMedia>(combo))));
-			if (compar) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	def ArrayList<ArrayList<Media>> initResult(ArrayList<MandatoryMedia> listMan, int size) {
@@ -107,19 +109,6 @@ class VideoGenTest1XtendVersion {
 		}
 
 		return result;
-	}
-
-	def void recursive_combinations(ArrayList<String> combination, int ndx, ArrayList<String> elems,
-		ArrayList<ArrayList<String>> result) {
-		if (ndx == elems.length) { // (reached end of list after selecting/not selecting) 
-			result.add(combination)
-		} else { // (include element at ndx) 
-			combination.add(elems.get(ndx));
-			recursive_combinations(combination, ndx + 1, elems, result);
-			// (don't include element at ndx) 
-			combination.remove(elems.get(ndx));
-			recursive_combinations(combination, ndx + 1, elems, result);
-		}
 	}
 
 	def ArrayList<ArrayList<String>> insertOp(ArrayList<String> lOp) {
@@ -138,7 +127,7 @@ class VideoGenTest1XtendVersion {
 		for (String elem : lOp) {
 			i = 0;
 			initI = i
-			sizePreced = size/(j*2)
+			sizePreced = size / (j * 2)
 			initSizePreced = sizePreced
 			println(elem + " " + sizePreced)
 			while (i < size && sizePreced < size) {
@@ -148,24 +137,78 @@ class VideoGenTest1XtendVersion {
 				}
 				initI += (initSizePreced * 2)
 				i = initI
-				println("i = " + i)
-				sizePreced = (initSizePreced * 2) + sizePreced   
-				println("sizePreced = " + sizePreced)
+				sizePreced = (initSizePreced * 2) + sizePreced
 			}
 			j *= 2
 		}
 		return result;
 	}
 
-	def void recursive_combinations_start() {
-		val ArrayList<String> combination = new ArrayList<String>();
-		combination.add("A")
-		combination.add("B")
-		combination.add("C")
-		combination.add("D")
-		val result = insertOp(combination)
-		for (ArrayList<String> l : result) {
-			println("l:" + l)
+	def void generateCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
+		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt) {
+		var DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		var Date date = new Date();
+		var BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new FileWriter("./results/result-" + df.format(date) + ".csv"))
+			writer.write(toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
+			writer.flush()
+			writer.close()
+		} catch (IOException exception) {
+			System.err.println(exception)
 		}
+
+	}
+
+	def String toCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
+		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt) {
+		var String separator = ";";
+		var String separatorLine = "\n";
+		var StringBuilder stringBuilder = new StringBuilder();
+		var ArrayList<String> columnNames = new ArrayList
+		// Adding CSV Headers
+		stringBuilder.append("id");
+		stringBuilder.append(separator);
+		for (String man : listMan) {
+			stringBuilder.append(man);
+			columnNames.add(man)
+			stringBuilder.append(separator);
+		}
+		for (String opt : listOpt) {
+			stringBuilder.append(opt);
+			columnNames.add(opt)
+			stringBuilder.append(separator);
+		}
+
+		for (String alt : listAlt) {
+			stringBuilder.append(alt);
+			columnNames.add(alt)
+			stringBuilder.append(separator);
+		}
+
+		stringBuilder.append("size");
+		stringBuilder.append(separator);
+
+		stringBuilder.append(separatorLine);
+
+		var id = 1;
+		for (ArrayList<String> l : variantes) {
+			var long totalSize
+			stringBuilder.append(id)
+			stringBuilder.append(separator)
+			for (String column : columnNames) {
+				stringBuilder.append(l.contains(column))
+				stringBuilder.append(separator)
+			}
+			for(String v: l){
+				var Long size = mapMediaSizes.get(v)
+				totalSize += size
+			}
+			stringBuilder.append(totalSize)
+			stringBuilder.append(separatorLine)
+			id++;
+		}
+		println(stringBuilder.toString())
+		return stringBuilder.toString();
 	}
 }

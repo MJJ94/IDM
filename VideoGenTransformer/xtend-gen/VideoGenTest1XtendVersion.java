@@ -5,12 +5,18 @@ import fr.istic.videoGen.MediaDescription;
 import fr.istic.videoGen.OptionalMedia;
 import fr.istic.videoGen.VideoDescription;
 import fr.istic.videoGen.VideoGeneratorModel;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
+import java.util.HashMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,9 +25,10 @@ import org.junit.Test;
 public class VideoGenTest1XtendVersion {
   @Test
   public void testLoadModel() {
-    final ArrayList<MandatoryMedia> listMan = new ArrayList<MandatoryMedia>();
-    final ArrayList<OptionalMedia> listOp = new ArrayList<OptionalMedia>();
-    final ArrayList<AlternativesMedia> listAlt = new ArrayList<AlternativesMedia>();
+    final ArrayList<String> listMan = new ArrayList<String>();
+    final ArrayList<String> listOp = new ArrayList<String>();
+    final ArrayList<String> listAlt = new ArrayList<String>();
+    HashMap<String, Long> mapSizes = new HashMap<String, Long>();
     final VideoGeneratorModel videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI("specification.videogen"));
     Assert.assertNotNull(videoGen);
     EList<Media> _medias = videoGen.getMedias();
@@ -39,7 +46,8 @@ public class VideoGenTest1XtendVersion {
           long _length = f.length();
           String _plus_1 = (_plus + Long.valueOf(_length));
           InputOutput.<String>println(_plus_1);
-          listMan.add(man);
+          listMan.add(des.getLocation());
+          mapSizes.put(des.getLocation(), Long.valueOf(f.length()));
         }
       } else {
         if ((m instanceof OptionalMedia)) {
@@ -55,7 +63,8 @@ public class VideoGenTest1XtendVersion {
             long _length_1 = f_1.length();
             String _plus_3 = (_plus_2 + Long.valueOf(_length_1));
             InputOutput.<String>println(_plus_3);
-            listOp.add(op);
+            listOp.add(des_1.getLocation());
+            mapSizes.put(des_1.getLocation(), Long.valueOf(f_1.length()));
           }
         } else {
           if ((m instanceof AlternativesMedia)) {
@@ -71,45 +80,44 @@ public class VideoGenTest1XtendVersion {
                 long _length_2 = f_2.length();
                 String _plus_5 = (_plus_4 + Long.valueOf(_length_2));
                 InputOutput.<String>println(_plus_5);
-                listAlt.add(alt);
+                listAlt.add(des_2.getLocation());
+                mapSizes.put(des_2.getLocation(), Long.valueOf(f_2.length()));
               }
             }
           }
         }
       }
     }
-    final ArrayList result = this.calculateVariants(listMan, listOp, listAlt);
+    final ArrayList<ArrayList<String>> result = this.calculateVariants(listMan, listOp, listAlt);
+    this.generateCSV(result, mapSizes, listMan, listOp, listAlt);
   }
   
-  public ArrayList calculateVariants(final ArrayList<MandatoryMedia> listMan, final ArrayList<OptionalMedia> listOp, final ArrayList<AlternativesMedia> listAlt) {
+  public ArrayList<ArrayList<String>> calculateVariants(final ArrayList<String> listMan, final ArrayList<String> listOp, final ArrayList<String> listAlt) {
     int _size = listOp.size();
     String _plus = ("listOp.size() = " + Integer.valueOf(_size));
     String _plus_1 = (_plus + " listAlt.size() = ");
     int _size_1 = listAlt.size();
     String _plus_2 = (_plus_1 + Integer.valueOf(_size_1));
     InputOutput.<String>println(_plus_2);
-    int _size_2 = listOp.size();
-    int _multiply = (_size_2 * 2);
-    int _size_3 = listAlt.size();
-    final int resultNumber = (_multiply * _size_3);
-    ArrayList<ArrayList<Media>> result = this.initResult(listMan, resultNumber);
-    ArrayList<ArrayList<String>> optionelCombinations = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> opCombinations = this.insertOp(listOp);
+    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
     int j = 0;
     int i = 0;
-    int _size_4 = result.size();
-    String _plus_3 = ("size = " + Integer.valueOf(_size_4));
-    InputOutput.<String>println(_plus_3);
-    this.recursive_combinations_start();
-    while ((j < resultNumber)) {
+    for (final ArrayList<String> l : opCombinations) {
+      for (final String alt : listAlt) {
+        result.add(l);
+      }
+    }
+    for (final ArrayList<String> l_1 : result) {
+      for (final String man : listMan) {
+        l_1.add(man);
+      }
+    }
+    while ((j < result.size())) {
       {
-        for (final AlternativesMedia alt : listAlt) {
+        for (final String alt_1 : listAlt) {
           {
-            result.get(j).add(alt);
-            int _size_5 = optionelCombinations.size();
-            boolean _lessThan = (i < _size_5);
-            if (_lessThan) {
-              InputOutput.<Integer>println(Integer.valueOf(optionelCombinations.get(i).size()));
-            }
+            result.get(j).add(alt_1);
             j++;
           }
         }
@@ -117,22 +125,6 @@ public class VideoGenTest1XtendVersion {
       }
     }
     return result;
-  }
-  
-  public boolean contain(final ArrayList<ArrayList<OptionalMedia>> used, final ArrayList<OptionalMedia> combo) {
-    boolean compar = false;
-    for (final ArrayList<OptionalMedia> l : used) {
-      {
-        InputOutput.<String>println(((("l: " + l) + " combo: ") + combo));
-        HashSet<OptionalMedia> _hashSet = new HashSet<OptionalMedia>(l);
-        HashSet<OptionalMedia> _hashSet_1 = new HashSet<OptionalMedia>(combo);
-        compar = _hashSet.equals(_hashSet_1);
-        if (compar) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
   
   public ArrayList<ArrayList<Media>> initResult(final ArrayList<MandatoryMedia> listMan, final int size) {
@@ -146,19 +138,6 @@ public class VideoGenTest1XtendVersion {
       }
     }
     return result;
-  }
-  
-  public void recursive_combinations(final ArrayList<String> combination, final int ndx, final ArrayList<String> elems, final ArrayList<ArrayList<String>> result) {
-    int _length = ((Object[])Conversions.unwrapArray(elems, Object.class)).length;
-    boolean _equals = (ndx == _length);
-    if (_equals) {
-      result.add(combination);
-    } else {
-      combination.add(elems.get(ndx));
-      this.recursive_combinations(combination, (ndx + 1), elems, result);
-      combination.remove(elems.get(ndx));
-      this.recursive_combinations(combination, (ndx + 1), elems, result);
-    }
   }
   
   public ArrayList<ArrayList<String>> insertOp(final ArrayList<String> lOp) {
@@ -195,9 +174,7 @@ public class VideoGenTest1XtendVersion {
             int _initI = initI;
             initI = (_initI + (initSizePreced * 2));
             i = initI;
-            InputOutput.<String>println(("i = " + Integer.valueOf(i)));
             sizePreced = ((initSizePreced * 2) + sizePreced);
-            InputOutput.<String>println(("sizePreced = " + Integer.valueOf(sizePreced)));
           }
         }
         int _j = j;
@@ -207,15 +184,86 @@ public class VideoGenTest1XtendVersion {
     return result;
   }
   
-  public void recursive_combinations_start() {
-    final ArrayList<String> combination = new ArrayList<String>();
-    combination.add("A");
-    combination.add("B");
-    combination.add("C");
-    combination.add("D");
-    final ArrayList<ArrayList<String>> result = this.insertOp(combination);
-    for (final ArrayList<String> l : result) {
-      InputOutput.<String>println(("l:" + l));
+  public void generateCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
+    DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    Date date = new Date();
+    BufferedWriter writer = null;
+    try {
+      String _format = df.format(date);
+      String _plus = ("./results/result-" + _format);
+      String _plus_1 = (_plus + ".csv");
+      FileWriter _fileWriter = new FileWriter(_plus_1);
+      BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
+      writer = _bufferedWriter;
+      writer.write(this.toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
+      writer.flush();
+      writer.close();
+    } catch (final Throwable _t) {
+      if (_t instanceof IOException) {
+        final IOException exception = (IOException)_t;
+        System.err.println(exception);
+      } else {
+        throw Exceptions.sneakyThrow(_t);
+      }
     }
+  }
+  
+  public String toCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
+    String separator = ";";
+    String separatorLine = "\n";
+    StringBuilder stringBuilder = new StringBuilder();
+    ArrayList<String> columnNames = new ArrayList<String>();
+    stringBuilder.append("id");
+    stringBuilder.append(separator);
+    for (final String man : listMan) {
+      {
+        stringBuilder.append(man);
+        columnNames.add(man);
+        stringBuilder.append(separator);
+      }
+    }
+    for (final String opt : listOpt) {
+      {
+        stringBuilder.append(opt);
+        columnNames.add(opt);
+        stringBuilder.append(separator);
+      }
+    }
+    for (final String alt : listAlt) {
+      {
+        stringBuilder.append(alt);
+        columnNames.add(alt);
+        stringBuilder.append(separator);
+      }
+    }
+    stringBuilder.append("size");
+    stringBuilder.append(separator);
+    stringBuilder.append(separatorLine);
+    int id = 1;
+    for (final ArrayList<String> l : variantes) {
+      {
+        long totalSize = 0;
+        stringBuilder.append(id);
+        stringBuilder.append(separator);
+        for (final String column : columnNames) {
+          {
+            stringBuilder.append(l.contains(column));
+            stringBuilder.append(separator);
+          }
+        }
+        for (final String v : l) {
+          {
+            Long size = mapMediaSizes.get(v);
+            long _talSize = totalSize;
+            totalSize = (_talSize + (size).longValue());
+          }
+        }
+        stringBuilder.append(totalSize);
+        stringBuilder.append(separatorLine);
+        id++;
+      }
+    }
+    InputOutput.<String>println(stringBuilder.toString());
+    return stringBuilder.toString();
   }
 }
