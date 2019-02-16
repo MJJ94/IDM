@@ -11,8 +11,6 @@ import java.io.File
 import fr.istic.videoGen.AlternativesMedia
 import fr.istic.videoGen.MediaDescription
 import java.util.ArrayList
-import java.util.Stack
-import java.util.HashSet
 import java.util.HashMap
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -20,6 +18,7 @@ import java.io.BufferedWriter
 import java.util.Date
 import java.io.FileWriter
 import java.io.IOException
+import java.util.Random
 
 class VideoGenTest1XtendVersion {
 
@@ -66,7 +65,8 @@ class VideoGenTest1XtendVersion {
 		}
 		val result = calculateVariants(listMan, listOp, listAlt)
 		generateCSV(result, mapSizes, listMan, listOp, listAlt)
-//		println(result.size())
+		generateVideosSeq(result)
+		runCommands();
 	}
 
 	def ArrayList<ArrayList<String>> calculateVariants(ArrayList<String> listMan, ArrayList<String> listOp,
@@ -75,40 +75,21 @@ class VideoGenTest1XtendVersion {
 
 		var opCombinations = insertOp(listOp)
 		var result = new ArrayList<ArrayList<String>>
-		var j = 0;
-		var i = 0;
-		for (ArrayList<String> l : opCombinations) {
-			for (String alt : listAlt) {
-				result.add(l)
-			}
-		}
 
-		for (ArrayList<String> l : result) {
-			for (String man : listMan) {
-				l.add(man)
-			}
-		}
-		while (j < result.size()) {
-			for (String alt : listAlt) {
-				result.get(j).add(alt);
-				j++;
-			}
-			i++;
-		}
+		var manOpResult = new ArrayList<ArrayList<String>>(insertMan(listMan, opCombinations))
 
+		result = new ArrayList<ArrayList<String>>(insertAlt(listAlt, manOpResult))
 		return result;
 	}
 
-	def ArrayList<ArrayList<Media>> initResult(ArrayList<MandatoryMedia> listMan, int size) {
-
-		val result = new ArrayList<ArrayList<Media>>();
-		var i = 0;
-		while (i < size) {
-			result.add(new ArrayList<Media>(listMan))
-			i++;
+	def ArrayList<ArrayList<String>> insertMan(ArrayList<String> listMan, ArrayList<ArrayList<String>> opResult) {
+		var ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>(opResult)
+		for (String man : listMan) {
+			for (ArrayList<String> l : result) {
+				l.add(man)
+			}
 		}
-
-		return result;
+		return result
 	}
 
 	def ArrayList<ArrayList<String>> insertOp(ArrayList<String> lOp) {
@@ -141,6 +122,26 @@ class VideoGenTest1XtendVersion {
 			}
 			j *= 2
 		}
+		return result;
+	}
+
+	def ArrayList<ArrayList<String>> insertAlt(ArrayList<String> listAlt, ArrayList<ArrayList<String>> manOpResult) {
+		var ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>()
+		var j = 0;
+		for (ArrayList<String> l : manOpResult) {
+			for (String alt : listAlt) {
+				result.add(new ArrayList(l))
+			}
+		}
+		var size = result.size()
+
+		while (j < size) {
+			for (String alt : listAlt) {
+				result.get(j).add(alt);
+				j++;
+			}
+		}
+
 		return result;
 	}
 
@@ -200,7 +201,7 @@ class VideoGenTest1XtendVersion {
 				stringBuilder.append(l.contains(column))
 				stringBuilder.append(separator)
 			}
-			for(String v: l){
+			for (String v : l) {
 				var Long size = mapMediaSizes.get(v)
 				totalSize += size
 			}
@@ -208,7 +209,54 @@ class VideoGenTest1XtendVersion {
 			stringBuilder.append(separatorLine)
 			id++;
 		}
-		println(stringBuilder.toString())
 		return stringBuilder.toString();
 	}
+
+	def void generateVideosSeq(ArrayList<ArrayList<String>> variantes) {
+		var BufferedWriter writer;
+		try {
+			writer = new BufferedWriter(new FileWriter("./videos" + ".txt"))
+			writer.write(toTxt(variantes));
+			writer.flush()
+			writer.close()
+		} catch (IOException exception) {
+			System.err.println(exception)
+		}
+	}
+
+	def String toTxt(ArrayList<ArrayList<String>> variantes) {
+		var String separatorLine = "\n";
+		var StringBuilder stringBuilder = new StringBuilder();
+		var Random random = new Random()
+		var randomIndex = random.nextInt(variantes.size - 1)
+		var randomVar = variantes.get(randomIndex)
+		for (String elem : randomVar) {
+			stringBuilder.append("file '" + elem + "'");
+			stringBuilder.append(separatorLine)
+		}
+
+		return stringBuilder.toString()
+	}
+
+	def void runCommands() {
+		var command = "ffmpeg -f concat -safe 0 -i videos.txt -c copy output.mp4"
+		var playVideoCommand = "vlc output.mp4"
+		var remove = "rm output.mp4"
+		var DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		var Date date = new Date();
+		var gifCommand = "ffmpeg -i output.mp4 gif_" + df.format(date) + ".gif -hide_banner"
+		var p = Runtime.runtime.exec(command)
+
+		if (p.waitFor == 0) {
+			var gifP = Runtime.runtime.exec(gifCommand)
+			if (gifP.waitFor == 0) {
+				var vlcP = Runtime.runtime.exec(playVideoCommand)
+				if (vlcP.waitFor == 0) {
+					var removeP = Runtime.runtime.exec(remove)
+					removeP.waitFor
+				}
+			}
+		}
+	}
+}
 }

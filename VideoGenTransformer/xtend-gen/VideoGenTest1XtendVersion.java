@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.xtext.xbase.lib.Exceptions;
@@ -90,6 +91,8 @@ public class VideoGenTest1XtendVersion {
     }
     final ArrayList<ArrayList<String>> result = this.calculateVariants(listMan, listOp, listAlt);
     this.generateCSV(result, mapSizes, listMan, listOp, listAlt);
+    this.generateVideosSeq(result);
+    this.runCommands();
   }
   
   public ArrayList<ArrayList<String>> calculateVariants(final ArrayList<String> listMan, final ArrayList<String> listOp, final ArrayList<String> listAlt) {
@@ -101,40 +104,19 @@ public class VideoGenTest1XtendVersion {
     InputOutput.<String>println(_plus_2);
     ArrayList<ArrayList<String>> opCombinations = this.insertOp(listOp);
     ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-    int j = 0;
-    int i = 0;
-    for (final ArrayList<String> l : opCombinations) {
-      for (final String alt : listAlt) {
-        result.add(l);
-      }
-    }
-    for (final ArrayList<String> l_1 : result) {
-      for (final String man : listMan) {
-        l_1.add(man);
-      }
-    }
-    while ((j < result.size())) {
-      {
-        for (final String alt_1 : listAlt) {
-          {
-            result.get(j).add(alt_1);
-            j++;
-          }
-        }
-        i++;
-      }
-    }
+    ArrayList<ArrayList<String>> _insertMan = this.insertMan(listMan, opCombinations);
+    ArrayList<ArrayList<String>> manOpResult = new ArrayList<ArrayList<String>>(_insertMan);
+    ArrayList<ArrayList<String>> _insertAlt = this.insertAlt(listAlt, manOpResult);
+    ArrayList<ArrayList<String>> _arrayList = new ArrayList<ArrayList<String>>(_insertAlt);
+    result = _arrayList;
     return result;
   }
   
-  public ArrayList<ArrayList<Media>> initResult(final ArrayList<MandatoryMedia> listMan, final int size) {
-    final ArrayList<ArrayList<Media>> result = new ArrayList<ArrayList<Media>>();
-    int i = 0;
-    while ((i < size)) {
-      {
-        ArrayList<Media> _arrayList = new ArrayList<Media>(listMan);
-        result.add(_arrayList);
-        i++;
+  public ArrayList<ArrayList<String>> insertMan(final ArrayList<String> listMan, final ArrayList<ArrayList<String>> opResult) {
+    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>(opResult);
+    for (final String man : listMan) {
+      for (final ArrayList<String> l : result) {
+        l.add(man);
       }
     }
     return result;
@@ -179,6 +161,27 @@ public class VideoGenTest1XtendVersion {
         }
         int _j = j;
         j = (_j * 2);
+      }
+    }
+    return result;
+  }
+  
+  public ArrayList<ArrayList<String>> insertAlt(final ArrayList<String> listAlt, final ArrayList<ArrayList<String>> manOpResult) {
+    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+    int j = 0;
+    for (final ArrayList<String> l : manOpResult) {
+      for (final String alt : listAlt) {
+        ArrayList<String> _arrayList = new ArrayList<String>(l);
+        result.add(_arrayList);
+      }
+    }
+    int size = result.size();
+    while ((j < size)) {
+      for (final String alt_1 : listAlt) {
+        {
+          result.get(j).add(alt_1);
+          j++;
+        }
       }
     }
     return result;
@@ -263,7 +266,74 @@ public class VideoGenTest1XtendVersion {
         id++;
       }
     }
-    InputOutput.<String>println(stringBuilder.toString());
     return stringBuilder.toString();
+  }
+  
+  public void generateVideosSeq(final ArrayList<ArrayList<String>> variantes) {
+    BufferedWriter writer = null;
+    try {
+      FileWriter _fileWriter = new FileWriter(("./videos" + ".txt"));
+      BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
+      writer = _bufferedWriter;
+      writer.write(this.toTxt(variantes));
+      writer.flush();
+      writer.close();
+    } catch (final Throwable _t) {
+      if (_t instanceof IOException) {
+        final IOException exception = (IOException)_t;
+        System.err.println(exception);
+      } else {
+        throw Exceptions.sneakyThrow(_t);
+      }
+    }
+  }
+  
+  public String toTxt(final ArrayList<ArrayList<String>> variantes) {
+    String separatorLine = "\n";
+    StringBuilder stringBuilder = new StringBuilder();
+    Random random = new Random();
+    int _size = variantes.size();
+    int _minus = (_size - 1);
+    int randomIndex = random.nextInt(_minus);
+    ArrayList<String> randomVar = variantes.get(randomIndex);
+    for (final String elem : randomVar) {
+      {
+        stringBuilder.append((("file \'" + elem) + "\'"));
+        stringBuilder.append(separatorLine);
+      }
+    }
+    return stringBuilder.toString();
+  }
+  
+  public void runCommands() {
+    try {
+      String command = "ffmpeg -f concat -safe 0 -i videos.txt -c copy output.mp4";
+      String playVideoCommand = "vlc output.mp4";
+      String remove = "rm output.mp4";
+      DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+      Date date = new Date();
+      String _format = df.format(date);
+      String _plus = ("ffmpeg -i output.mp4 gif_" + _format);
+      String gifCommand = (_plus + ".gif -hide_banner");
+      Process p = Runtime.getRuntime().exec(command);
+      int _waitFor = p.waitFor();
+      boolean _equals = (_waitFor == 0);
+      if (_equals) {
+        Process gifP = Runtime.getRuntime().exec(gifCommand);
+        int _waitFor_1 = gifP.waitFor();
+        boolean _equals_1 = (_waitFor_1 == 0);
+        if (_equals_1) {
+          Process vlcP = Runtime.getRuntime().exec(playVideoCommand);
+          int _waitFor_2 = vlcP.waitFor();
+          boolean _equals_2 = (_waitFor_2 == 0);
+          if (_equals_2) {
+            Process removeP = Runtime.getRuntime().exec(remove);
+            removeP.waitFor();
+          }
+        }
+      }
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
 }
