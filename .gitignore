@@ -3,6 +3,7 @@
 .prefs
 *.class
 *.xtendbin
-*.gif
 VideoGenTransformer/videos.txt
 */results/*
+*/outputs/videos/*
+*/outputs/gifs/*
