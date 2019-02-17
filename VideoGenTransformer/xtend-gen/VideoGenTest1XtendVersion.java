@@ -307,29 +307,35 @@ public class VideoGenTest1XtendVersion {
   
   public void runCommands() {
     try {
-      String command = "ffmpeg -f concat -safe 0 -i videos.txt -c copy output.mp4";
-      String playVideoCommand = "vlc output.mp4";
-      String remove = "rm output.mp4";
       DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
       Date date = new Date();
       String _format = df.format(date);
-      String _plus = ("ffmpeg -i output.mp4 gif_" + _format);
-      String gifCommand = (_plus + ".gif -hide_banner");
-      Process p = Runtime.getRuntime().exec(command);
+      String _plus = ("video_" + _format);
+      final String outPutVideoName = (_plus + ".mp4");
+      String _format_1 = df.format(date);
+      String _plus_1 = ("gif_" + _format_1);
+      final String outPutGifName = (_plus_1 + ".gif");
+      final String outPutVideoPath = "outputs/videos/";
+      final String outPutGifPath = "outputs/gifs/";
+      final String videoCommand = (("ffmpeg -f concat -safe 0 -i videos.txt -c copy " + outPutVideoPath) + outPutVideoName);
+      final String playVideoCommand = (("vlc " + outPutVideoPath) + outPutVideoName);
+      final String gifCommand = (((((("ffmpeg -i " + outPutVideoPath) + outPutVideoName) + " -r 120 -vf scale=360:-1 ") + outPutGifPath) + outPutGifName) + " -hide_banner");
+      InputOutput.<String>println(gifCommand);
+      InputOutput.<String>println((("Generating " + outPutVideoPath) + outPutVideoName));
+      Process p = Runtime.getRuntime().exec(videoCommand);
       int _waitFor = p.waitFor();
       boolean _equals = (_waitFor == 0);
       if (_equals) {
+        InputOutput.<String>println(((outPutVideoPath + outPutVideoName) + " is generated"));
+        InputOutput.<String>println((("Generating " + outPutGifPath) + outPutGifName));
         Process gifP = Runtime.getRuntime().exec(gifCommand);
         int _waitFor_1 = gifP.waitFor();
         boolean _equals_1 = (_waitFor_1 == 0);
         if (_equals_1) {
+          InputOutput.<String>println(((outPutGifPath + outPutGifName) + "is generated"));
           Process vlcP = Runtime.getRuntime().exec(playVideoCommand);
           int _waitFor_2 = vlcP.waitFor();
-          boolean _equals_2 = (_waitFor_2 == 0);
-          if (_equals_2) {
-            Process removeP = Runtime.getRuntime().exec(remove);
-            removeP.waitFor();
-          }
+          /* (_waitFor_2 == 0); */
         }
       }
     } catch (Throwable _e) {

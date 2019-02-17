@@ -239,24 +239,27 @@ class VideoGenTest1XtendVersion {
 	}
 
 	def void runCommands() {
-		var command = "ffmpeg -f concat -safe 0 -i videos.txt -c copy output.mp4"
-		var playVideoCommand = "vlc output.mp4"
-		var remove = "rm output.mp4"
 		var DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		var Date date = new Date();
-		var gifCommand = "ffmpeg -i output.mp4 gif_" + df.format(date) + ".gif -hide_banner"
-		var p = Runtime.runtime.exec(command)
-
+		val outPutVideoName = "video_" + df.format(date) + ".mp4"
+		val outPutGifName = "gif_" + df.format(date) + ".gif"
+		val outPutVideoPath = "outputs/videos/"
+		val outPutGifPath = "outputs/gifs/"
+		val videoCommand = "ffmpeg -f concat -safe 0 -i videos.txt -c copy " + outPutVideoPath + outPutVideoName
+		val playVideoCommand = "vlc " + outPutVideoPath + outPutVideoName
+		val gifCommand = "ffmpeg -i " + outPutVideoPath + outPutVideoName + " -r 120 -vf scale=360:-1 " + outPutGifPath + outPutGifName + " -hide_banner"
+		println(gifCommand)
+		println("Generating " + outPutVideoPath + outPutVideoName)
+		var p = Runtime.runtime.exec(videoCommand)
 		if (p.waitFor == 0) {
+			println(outPutVideoPath + outPutVideoName + " is generated")
+			println("Generating " + outPutGifPath + outPutGifName)
 			var gifP = Runtime.runtime.exec(gifCommand)
 			if (gifP.waitFor == 0) {
+				println(outPutGifPath + outPutGifName + "is generated")
 				var vlcP = Runtime.runtime.exec(playVideoCommand)
-				if (vlcP.waitFor == 0) {
-					var removeP = Runtime.runtime.exec(remove)
-					removeP.waitFor
-				}
+				vlcP.waitFor == 0
 			}
 		}
 	}
-}
 }
