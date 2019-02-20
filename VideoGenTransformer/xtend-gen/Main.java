@@ -61,14 +61,14 @@ public class Main {
         }
       }
     }
-    ArrayList<ArrayList<String>> variants = Utils.calculateVariants(listMan, listOp, listAlt);
+    ArrayList<ArrayList<String>> variants = Variants.calculateVariants(listMan, listOp, listAlt);
     ArrayList<String> videos = new ArrayList<String>();
     videos.addAll(listMan);
     videos.addAll(listOp);
     videos.addAll(listAlt);
-    Utils.generateCSV(variants, mapSizes, listMan, listOp, listAlt);
-    Utils.generateVideosSeq(variants);
-    Utils.generateIcons(videos);
-    Utils.runCommands();
+    CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt);
+    CsvTxtGenerator.generateVideosSeq(variants);
+    OutPutsGenerator.generateIcons(videos);
+    OutPutsGenerator.runCommands();
   }
 }

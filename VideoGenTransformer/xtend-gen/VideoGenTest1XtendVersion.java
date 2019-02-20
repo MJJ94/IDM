@@ -87,7 +87,7 @@ public class VideoGenTest1XtendVersion {
         }
       }
     }
-    this.variants = Utils.calculateVariants(this.listMan, this.listOp, this.listAlt);
+    this.variants = Variants.calculateVariants(this.listMan, this.listOp, this.listAlt);
   }
   
   public int nbVariants(final int sizeMan, final int sizeOpt, final int sizeAlt) {
@@ -171,7 +171,7 @@ public class VideoGenTest1XtendVersion {
   public void nbLinesCSV() {
     this.initTest("only_alternatives.videogen");
     final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
-    final String csvPath = Utils.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt);
+    final String csvPath = CsvTxtGenerator.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt);
     final int nbLinesCsv = this.nbLinesCSV(csvPath);
     Assert.assertEquals(nbLinesCsv, nbVariants, 0);
   }
@@ -195,7 +195,7 @@ public class VideoGenTest1XtendVersion {
     allVideos.addAll(this.listMan);
     allVideos.addAll(this.listOp);
     allVideos.addAll(this.listAlt);
-    Utils.generateIcons(allVideos);
+    OutPutsGenerator.generateIcons(allVideos);
     final int nbIcons = this.getNbIcons();
     Assert.assertEquals(allVideos.size(), nbIcons, 0);
   }

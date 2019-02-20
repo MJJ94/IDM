@@ -60,7 +60,7 @@ class VideoGenTest1XtendVersion {
 				}
 			}
 		}
-		this.variants = Utils.calculateVariants(listMan, listOp, listAlt)
+		this.variants = Variants.calculateVariants(listMan, listOp, listAlt)
 	}
 
 	def int nbVariants(int sizeMan, int sizeOpt, int sizeAlt) {
@@ -130,7 +130,7 @@ class VideoGenTest1XtendVersion {
 	def void nbLinesCSV() {
 		initTest("only_alternatives.videogen")
 		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
-		val String csvPath = Utils.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
+		val String csvPath = CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
 		val nbLinesCsv = nbLinesCSV(csvPath)
 		assertEquals(nbLinesCsv, nbVariants, 0)
 	}
@@ -157,7 +157,7 @@ class VideoGenTest1XtendVersion {
 		allVideos.addAll(listOp)
 		allVideos.addAll(listAlt)
 
-		Utils.generateIcons(allVideos)
+		OutPutsGenerator.generateIcons(allVideos)
 		val nbIcons = getNbIcons()
 
 		assertEquals(allVideos.size(), nbIcons, 0)
