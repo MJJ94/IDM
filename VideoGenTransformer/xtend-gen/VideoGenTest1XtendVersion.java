@@ -5,11 +5,15 @@ import fr.istic.videoGen.MediaDescription;
 import fr.istic.videoGen.OptionalMedia;
 import fr.istic.videoGen.VideoDescription;
 import fr.istic.videoGen.VideoGeneratorModel;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -95,10 +99,54 @@ public class VideoGenTest1XtendVersion {
     return result;
   }
   
+  public int nbLinesCSV(final String path) {
+    final File file = new File(path);
+    int result = 0;
+    boolean _exists = file.exists();
+    if (_exists) {
+      try {
+        FileReader _fileReader = new FileReader(file);
+        final BufferedReader stdInput = new BufferedReader(_fileReader);
+        int c = 0;
+        while ((c > (-1))) {
+          {
+            String line = stdInput.readLine();
+            boolean _contains = line.contains("id");
+            boolean _not = (!_contains);
+            if (_not) {
+              result++;
+            }
+            c = stdInput.read();
+          }
+        }
+        return result;
+      } catch (final Throwable _t) {
+        if (_t instanceof IOException) {
+          final IOException e = (IOException)_t;
+          System.err.println(e);
+          return (-1);
+        } else {
+          throw Exceptions.sneakyThrow(_t);
+        }
+      }
+    }
+    System.err.println((("the File: " + path) + " doesn\'t exist"));
+    return (-2);
+  }
+  
   @Test
   public void nbVariants() {
     this.initTest("only_alternatives.videogen");
-    int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
+    final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
     Assert.assertEquals(nbVariants, this.variants.size(), 0);
+  }
+  
+  @Test
+  public void nbLinesCSV() {
+    this.initTest("only_alternatives.videogen");
+    final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
+    final String csvPath = Utils.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt);
+    final int nbLinesCsv = this.nbLinesCSV(csvPath);
+    Assert.assertEquals(nbLinesCsv, nbVariants, 0);
   }
 }

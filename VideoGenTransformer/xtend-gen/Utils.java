@@ -23,7 +23,6 @@ public class Utils {
     ArrayList<ArrayList<String>> _insertAlt = Utils.insertAlt(listAlt, manOpResult);
     ArrayList<ArrayList<String>> _arrayList = new ArrayList<ArrayList<String>>(_insertAlt);
     result = _arrayList;
-    InputOutput.<Integer>println(Integer.valueOf(result.size()));
     return result;
   }
   
@@ -133,24 +132,27 @@ public class Utils {
     return result;
   }
   
-  public static void generateCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
+  public static String generateCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
     DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
     Date date = new Date();
     BufferedWriter writer = null;
+    String _format = df.format(date);
+    String _plus = ("result-" + _format);
+    final String fileName = (_plus + ".csv");
+    final String filePath = ("./results/" + fileName);
     try {
-      String _format = df.format(date);
-      String _plus = ("./results/result-" + _format);
-      String _plus_1 = (_plus + ".csv");
-      FileWriter _fileWriter = new FileWriter(_plus_1);
+      FileWriter _fileWriter = new FileWriter(filePath);
       BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
       writer = _bufferedWriter;
       writer.write(Utils.toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
       writer.flush();
       writer.close();
+      return filePath;
     } catch (final Throwable _t) {
       if (_t instanceof IOException) {
         final IOException exception = (IOException)_t;
         System.err.println(exception);
+        return null;
       } else {
         throw Exceptions.sneakyThrow(_t);
       }
@@ -308,40 +310,47 @@ public class Utils {
   
   public static Double getDuration(final String videoName) {
     try {
-      String durationCommand = ((" ffprobe -i " + videoName) + " -show_format");
-      Process durationP = Runtime.getRuntime().exec(durationCommand);
-      int _waitFor = durationP.waitFor();
-      boolean _equals = (_waitFor == 0);
-      if (_equals) {
-        try {
-          InputStream _inputStream = durationP.getInputStream();
-          InputStreamReader _inputStreamReader = new InputStreamReader(_inputStream);
-          final BufferedReader stdInput = new BufferedReader(_inputStreamReader);
-          int c = 0;
-          while ((c > (-1))) {
-            {
-              String line = "";
-              line = stdInput.readLine().toLowerCase();
-              boolean _contains = line.contains("uration");
-              if (_contains) {
-                final String durationStr = line.split("=")[1];
-                final double duration = Double.parseDouble(durationStr);
-                return Double.valueOf(duration);
+      Double _xblockexpression = null;
+      {
+        String durationCommand = ((" ffprobe -i " + videoName) + " -show_format");
+        Process durationP = Runtime.getRuntime().exec(durationCommand);
+        Double _xifexpression = null;
+        int _waitFor = durationP.waitFor();
+        boolean _equals = (_waitFor == 0);
+        if (_equals) {
+          Double _xtrycatchfinallyexpression = null;
+          try {
+            InputStream _inputStream = durationP.getInputStream();
+            InputStreamReader _inputStreamReader = new InputStreamReader(_inputStream);
+            final BufferedReader stdInput = new BufferedReader(_inputStreamReader);
+            int c = 0;
+            while ((c > (-1))) {
+              {
+                String line = "";
+                line = stdInput.readLine().toLowerCase();
+                boolean _contains = line.contains("uration");
+                if (_contains) {
+                  final String durationStr = line.split("=")[1];
+                  final double duration = Double.parseDouble(durationStr);
+                  return Double.valueOf(duration);
+                }
+                c = stdInput.read();
               }
-              c = stdInput.read();
+            }
+          } catch (final Throwable _t) {
+            if (_t instanceof IOException) {
+              final IOException e = (IOException)_t;
+              System.err.println(e);
+              return null;
+            } else {
+              throw Exceptions.sneakyThrow(_t);
             }
           }
-        } catch (final Throwable _t) {
-          if (_t instanceof IOException) {
-            final IOException e = (IOException)_t;
-            System.err.println(e);
-          } else {
-            throw Exceptions.sneakyThrow(_t);
-          }
+          _xifexpression = _xtrycatchfinallyexpression;
         }
-        return null;
+        _xblockexpression = _xifexpression;
       }
-      return null;
+      return _xblockexpression;
     } catch (Throwable _e) {
       throw Exceptions.sneakyThrow(_e);
     }

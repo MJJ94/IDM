@@ -7,11 +7,8 @@ import java.io.IOException
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.util.HashMap
-import java.io.Reader
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 
 class Utils {
 	def static ArrayList<ArrayList<String>> calculateVariants(ArrayList<String> listMan, ArrayList<String> listOp,
@@ -21,7 +18,6 @@ class Utils {
 		var opCombinations = insertOp(listOp)
 		var manOpResult = new ArrayList<ArrayList<String>>(insertMan(listMan, opCombinations))
 		result = new ArrayList<ArrayList<String>>(insertAlt(listAlt, manOpResult))
-		println(result.size())
 		return result;
 	}
 
@@ -105,27 +101,30 @@ class Utils {
 					result.add(l)
 				}
 			}
-		}else {
+		} else {
 			return manOpResult;
 		}
 
 		return result;
 	}
 
-	def static void generateCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
+	def static String generateCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
 		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt) {
 		var DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		var Date date = new Date();
 		var BufferedWriter writer;
+		val fileName = "result-" + df.format(date) + ".csv"
+		val filePath = "./results/" + fileName
 		try {
-			writer = new BufferedWriter(new FileWriter("./results/result-" + df.format(date) + ".csv"))
+			writer = new BufferedWriter(new FileWriter(filePath))
 			writer.write(toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
 			writer.flush()
 			writer.close()
+			return filePath
 		} catch (IOException exception) {
 			System.err.println(exception)
+			return null
 		}
-
 	}
 
 	def static String toCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
@@ -272,8 +271,8 @@ class Utils {
 				}
 			} catch (IOException e) {
 				System.err.println(e)
+				return null
 			}
-			return null
 		}
 	}
 }

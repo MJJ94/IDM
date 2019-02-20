@@ -10,6 +10,10 @@ import fr.istic.videoGen.AlternativesMedia
 import fr.istic.videoGen.MediaDescription
 import java.util.ArrayList
 import java.util.HashMap
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.FileReader
+import java.io.IOException
 
 class VideoGenTest1XtendVersion {
 	var private listMan = new ArrayList<String>();
@@ -59,6 +63,7 @@ class VideoGenTest1XtendVersion {
 
 	def int nbVariants(int sizeMan, int sizeOpt, int sizeAlt) {
 		var result = 1
+		// pour le cas de plusieurs optionels
 		var nbOp = Math.pow(2, sizeOpt)
 
 		if (sizeOpt > 0) {
@@ -72,10 +77,43 @@ class VideoGenTest1XtendVersion {
 		return result
 	}
 
+	def int nbLinesCSV(String path) {
+		val File file = new File(path)
+		var result = 0
+		if (file.exists) {
+			try {
+				val stdInput = new BufferedReader(new FileReader(file))
+				var c = 0
+				while (c > -1) {
+					var line = stdInput.readLine
+					if (!line.contains("id")) {
+						result++
+					}
+					c = stdInput.read
+				}
+				return result
+			} catch (IOException e) {
+				System.err.println(e)
+				return -1
+			}
+		}
+		System.err.println("the File: " + path + " doesn't exist")
+		return -2
+	}
+
 	@Test
 	def void nbVariants() {
 		initTest("only_alternatives.videogen")
-		var nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
+		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
 		assertEquals(nbVariants, variants.size(), 0)
+	}
+
+	@Test
+	def void nbLinesCSV() {
+		initTest("only_alternatives.videogen")
+		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
+		val String csvPath = Utils.generateCSV(variants,mapSizes,listMan,listOp,listAlt)
+		val nbLinesCsv = nbLinesCSV(csvPath)
+		assertEquals(nbLinesCsv, nbVariants, 0)
 	}
 }

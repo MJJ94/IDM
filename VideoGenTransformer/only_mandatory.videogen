@@ -1,7 +1,7 @@
 VideoGen {
 	mandatory videoseq v1 "video_v1.mp4"
-	mandatory videoseq v32 "video_v2.mp4"
 	mandatory videoseq v2 "video_v2.mp4"
-	mandatory videoseq v31 "video_v1.mp4"
+	mandatory videoseq v3 "video_v2.mp4"
+	mandatory videoseq v4 "video_v1.mp4"
 
 }
