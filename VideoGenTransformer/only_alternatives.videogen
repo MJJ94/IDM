@@ -1,0 +1,20 @@
+VideoGen {
+	alternatives v1 {
+		videoseq v31 "video_v11.mp4"
+		videoseq v32 "video_v12.mp4"
+		videoseq v33 "video_v13.mp4"
+	}
+
+	alternatives v2 {
+		videoseq v31 "video_v21.mp4"
+		videoseq v32 "video_v22.mp4"
+		videoseq v33 "video_v23.mp4"
+	}
+
+	alternatives v3 {
+		videoseq v31 "video_v31.mp4"
+		videoseq v32 "video_v32.mp4"
+		videoseq v33 "video_v33.mp4"
+	}
+
+}

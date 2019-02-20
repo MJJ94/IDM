@@ -57,13 +57,25 @@ class VideoGenTest1XtendVersion {
 		this.variants = Utils.calculateVariants(listMan, listOp, listAlt)
 	}
 
+	def int nbVariants(int sizeMan, int sizeOpt, int sizeAlt) {
+		var result = 1
+		var nbOp = Math.pow(2, sizeOpt)
+
+		if (sizeOpt > 0) {
+			result *= nbOp.intValue
+		}
+
+		if (sizeAlt > 0) {
+			result *= sizeAlt
+		}
+
+		return result
+	}
+
 	@Test
 	def void nbVariants() {
-		initTest("specification.videogen")
-		var nbOp = Math.pow(2, listOp.size())
-		var nbAlt = listAlt.size()
-		var nbVariants = nbOp * nbAlt
-
+		initTest("only_alternatives.videogen")
+		var nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
 		assertEquals(nbVariants, variants.size(), 0)
 	}
 }

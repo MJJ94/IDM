@@ -1,9 +1,9 @@
 VideoGen {
 	mandatory videoseq v1 "video_v1.mp4"
 	optional videoseq v2 "video_v2.mp4"
-	alternatives v5 {
-		videoseq v51 "video_v31.mp4"
-		videoseq v52 "video_v32.mp4"
-		videoseq v53 "video_v33.mp4"
+	alternatives v3 {
+		videoseq v31 "video_v31.mp4"
+		videoseq v32 "video_v32.mp4"
+		videoseq v33 "video_v33.mp4"
 	}
 }

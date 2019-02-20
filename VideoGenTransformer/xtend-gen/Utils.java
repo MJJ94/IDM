@@ -16,21 +16,32 @@ import org.eclipse.xtext.xbase.lib.InputOutput;
 @SuppressWarnings("all")
 public class Utils {
   public static ArrayList<ArrayList<String>> calculateVariants(final ArrayList<String> listMan, final ArrayList<String> listOp, final ArrayList<String> listAlt) {
-    ArrayList<ArrayList<String>> opCombinations = Utils.insertOp(listOp);
     ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> opCombinations = Utils.insertOp(listOp);
     ArrayList<ArrayList<String>> _insertMan = Utils.insertMan(listMan, opCombinations);
     ArrayList<ArrayList<String>> manOpResult = new ArrayList<ArrayList<String>>(_insertMan);
     ArrayList<ArrayList<String>> _insertAlt = Utils.insertAlt(listAlt, manOpResult);
     ArrayList<ArrayList<String>> _arrayList = new ArrayList<ArrayList<String>>(_insertAlt);
     result = _arrayList;
+    InputOutput.<Integer>println(Integer.valueOf(result.size()));
     return result;
   }
   
   public static ArrayList<ArrayList<String>> insertMan(final ArrayList<String> listMan, final ArrayList<ArrayList<String>> opResult) {
     ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>(opResult);
-    for (final String man : listMan) {
-      for (final ArrayList<String> l : result) {
-        l.add(man);
+    boolean _isEmpty = listMan.isEmpty();
+    boolean _not = (!_isEmpty);
+    if (_not) {
+      boolean _isEmpty_1 = result.isEmpty();
+      boolean _not_1 = (!_isEmpty_1);
+      if (_not_1) {
+        for (final String man : listMan) {
+          for (final ArrayList<String> l : result) {
+            l.add(man);
+          }
+        }
+      } else {
+        result.add(listMan);
       }
     }
     return result;
@@ -44,36 +55,40 @@ public class Utils {
     int j = 1;
     int initSizePreced = sizePreced;
     int initI = 0;
-    while ((i < size)) {
-      {
-        ArrayList<String> _arrayList = new ArrayList<String>();
-        result.add(_arrayList);
-        i++;
-      }
-    }
-    i = 0;
-    for (final String elem : lOp) {
-      {
-        i = 0;
-        initI = i;
-        sizePreced = (size / (j * 2));
-        initSizePreced = sizePreced;
-        while (((i < size) && (sizePreced < size))) {
-          {
-            while ((i < sizePreced)) {
-              {
-                result.get(i).add(elem);
-                i++;
-              }
-            }
-            int _initI = initI;
-            initI = (_initI + (initSizePreced * 2));
-            i = initI;
-            sizePreced = ((initSizePreced * 2) + sizePreced);
-          }
+    boolean _isEmpty = lOp.isEmpty();
+    boolean _not = (!_isEmpty);
+    if (_not) {
+      while ((i < size)) {
+        {
+          ArrayList<String> _arrayList = new ArrayList<String>();
+          result.add(_arrayList);
+          i++;
         }
-        int _j = j;
-        j = (_j * 2);
+      }
+      i = 0;
+      for (final String elem : lOp) {
+        {
+          i = 0;
+          initI = i;
+          sizePreced = (size / (j * 2));
+          initSizePreced = sizePreced;
+          while (((i < size) && (sizePreced < size))) {
+            {
+              while ((i < sizePreced)) {
+                {
+                  result.get(i).add(elem);
+                  i++;
+                }
+              }
+              int _initI = initI;
+              initI = (_initI + (initSizePreced * 2));
+              i = initI;
+              sizePreced = ((initSizePreced * 2) + sizePreced);
+            }
+          }
+          int _j = j;
+          j = (_j * 2);
+        }
       }
     }
     return result;
@@ -81,21 +96,39 @@ public class Utils {
   
   public static ArrayList<ArrayList<String>> insertAlt(final ArrayList<String> listAlt, final ArrayList<ArrayList<String>> manOpResult) {
     ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-    int j = 0;
-    for (final ArrayList<String> l : manOpResult) {
-      for (final String alt : listAlt) {
-        ArrayList<String> _arrayList = new ArrayList<String>(l);
-        result.add(_arrayList);
-      }
-    }
-    int size = result.size();
-    while ((j < size)) {
-      for (final String alt_1 : listAlt) {
-        {
-          result.get(j).add(alt_1);
-          j++;
+    boolean _isEmpty = listAlt.isEmpty();
+    boolean _not = (!_isEmpty);
+    if (_not) {
+      boolean _isEmpty_1 = manOpResult.isEmpty();
+      boolean _not_1 = (!_isEmpty_1);
+      if (_not_1) {
+        int j = 0;
+        for (final ArrayList<String> l : manOpResult) {
+          for (final String alt : listAlt) {
+            ArrayList<String> _arrayList = new ArrayList<String>(l);
+            result.add(_arrayList);
+          }
+        }
+        int size = result.size();
+        while ((j < size)) {
+          for (final String alt_1 : listAlt) {
+            {
+              result.get(j).add(alt_1);
+              j++;
+            }
+          }
+        }
+      } else {
+        for (final String alt_1 : listAlt) {
+          {
+            ArrayList<String> l_1 = new ArrayList<String>();
+            l_1.add(alt_1);
+            result.add(l_1);
+          }
         }
       }
+    } else {
+      return manOpResult;
     }
     return result;
   }

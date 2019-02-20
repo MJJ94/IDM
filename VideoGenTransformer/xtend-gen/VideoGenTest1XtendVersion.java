@@ -80,12 +80,25 @@ public class VideoGenTest1XtendVersion {
     this.variants = Utils.calculateVariants(this.listMan, this.listOp, this.listAlt);
   }
   
+  public int nbVariants(final int sizeMan, final int sizeOpt, final int sizeAlt) {
+    int result = 1;
+    double nbOp = Math.pow(2, sizeOpt);
+    if ((sizeOpt > 0)) {
+      int _result = result;
+      int _intValue = Double.valueOf(nbOp).intValue();
+      result = (_result * _intValue);
+    }
+    if ((sizeAlt > 0)) {
+      int _result_1 = result;
+      result = (_result_1 * sizeAlt);
+    }
+    return result;
+  }
+  
   @Test
   public void nbVariants() {
-    this.initTest("specification.videogen");
-    double nbOp = Math.pow(2, this.listOp.size());
-    int nbAlt = this.listAlt.size();
-    double nbVariants = (nbOp * nbAlt);
+    this.initTest("only_alternatives.videogen");
+    int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
     Assert.assertEquals(nbVariants, this.variants.size(), 0);
   }
 }
