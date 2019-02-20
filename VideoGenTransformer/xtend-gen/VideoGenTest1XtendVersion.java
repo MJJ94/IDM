@@ -9,10 +9,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.xtext.xbase.lib.CollectionExtensions;
+import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,6 +43,7 @@ public class VideoGenTest1XtendVersion {
     this.listAlt = _arrayList_2;
     HashMap<String, Long> _hashMap = new HashMap<String, Long>();
     this.mapSizes = _hashMap;
+    this.cleanDirectories();
     final VideoGeneratorModel videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI(specification));
     EList<Media> _medias = videoGen.getMedias();
     for (final Media m : _medias) {
@@ -134,6 +140,26 @@ public class VideoGenTest1XtendVersion {
     return (-2);
   }
   
+  public void cleanDirectories() {
+    try {
+      final String outputs = "./outputs/";
+      File results = new File("./results/");
+      File videoOutputs = new File((outputs + "videos/"));
+      File gifsOutputs = new File((outputs + "gifs/"));
+      File iconsOutputs = new File((outputs + "icons/"));
+      ArrayList<File> files = new ArrayList<File>();
+      CollectionExtensions.<File>addAll(files, results.listFiles());
+      CollectionExtensions.<File>addAll(files, videoOutputs.listFiles());
+      CollectionExtensions.<File>addAll(files, gifsOutputs.listFiles());
+      CollectionExtensions.<File>addAll(files, iconsOutputs.listFiles());
+      for (final File file : files) {
+        Files.delete(Paths.get(file.getPath()));
+      }
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
   @Test
   public void nbVariants() {
     this.initTest("only_alternatives.videogen");
@@ -148,5 +174,29 @@ public class VideoGenTest1XtendVersion {
     final String csvPath = Utils.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt);
     final int nbLinesCsv = this.nbLinesCSV(csvPath);
     Assert.assertEquals(nbLinesCsv, nbVariants, 0);
+  }
+  
+  public int getNbIcons() {
+    int result = 0;
+    final String iconFolderPath = "./outputs/icons/";
+    File iconFolder = new File(iconFolderPath);
+    File[] _listFiles = iconFolder.listFiles();
+    ArrayList<File> icons = new ArrayList<File>((Collection<? extends File>)Conversions.doWrapArray(_listFiles));
+    for (final File icon : icons) {
+      result++;
+    }
+    return result;
+  }
+  
+  @Test
+  public void nbIcons() {
+    this.initTest("specification.videogen");
+    ArrayList<String> allVideos = new ArrayList<String>();
+    allVideos.addAll(this.listMan);
+    allVideos.addAll(this.listOp);
+    allVideos.addAll(this.listAlt);
+    Utils.generateIcons(allVideos);
+    final int nbIcons = this.getNbIcons();
+    Assert.assertEquals(allVideos.size(), nbIcons, 0);
   }
 }

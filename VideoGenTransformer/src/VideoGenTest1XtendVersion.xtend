@@ -14,6 +14,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.FileReader
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class VideoGenTest1XtendVersion {
 	var private listMan = new ArrayList<String>();
@@ -27,7 +29,7 @@ class VideoGenTest1XtendVersion {
 		this.listOp = new ArrayList<String>();
 		this.listAlt = new ArrayList<String>();
 		this.mapSizes = new HashMap<String, Long>
-
+		cleanDirectories()
 		val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI(specification))
 		for (Media m : videoGen.medias) {
 			if (m instanceof MandatoryMedia) {
@@ -101,6 +103,22 @@ class VideoGenTest1XtendVersion {
 		return -2
 	}
 
+	def void cleanDirectories() {
+		val outputs = "./outputs/"
+		var results = new File("./results/")
+		var videoOutputs = new File(outputs + "videos/")
+		var gifsOutputs = new File(outputs + "gifs/")
+		var iconsOutputs = new File(outputs + "icons/")
+		var ArrayList<File> files = new ArrayList
+		files.addAll(results.listFiles)
+		files.addAll(videoOutputs.listFiles)
+		files.addAll(gifsOutputs.listFiles)
+		files.addAll(iconsOutputs.listFiles)
+		for (File file : files) {
+			Files.delete(Paths.get(file.path))
+		}
+	}
+
 	@Test
 	def void nbVariants() {
 		initTest("only_alternatives.videogen")
@@ -112,8 +130,36 @@ class VideoGenTest1XtendVersion {
 	def void nbLinesCSV() {
 		initTest("only_alternatives.videogen")
 		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
-		val String csvPath = Utils.generateCSV(variants,mapSizes,listMan,listOp,listAlt)
+		val String csvPath = Utils.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
 		val nbLinesCsv = nbLinesCSV(csvPath)
 		assertEquals(nbLinesCsv, nbVariants, 0)
+	}
+
+	def int getNbIcons() {
+		var int result = 0
+		val iconFolderPath = "./outputs/icons/"
+		var iconFolder = new File(iconFolderPath)
+		var ArrayList<File> icons = new ArrayList(iconFolder.listFiles)
+
+		for (File icon : icons) {
+			result++
+		}
+
+		return result
+	}
+
+	@Test
+	def void nbIcons() {
+		initTest("specification.videogen")
+		var ArrayList<String> allVideos = new ArrayList<String>()
+
+		allVideos.addAll(listMan)
+		allVideos.addAll(listOp)
+		allVideos.addAll(listAlt)
+
+		Utils.generateIcons(allVideos)
+		val nbIcons = getNbIcons()
+
+		assertEquals(allVideos.size(), nbIcons, 0)
 	}
 }

@@ -355,4 +355,52 @@ public class Utils {
       throw Exceptions.sneakyThrow(_e);
     }
   }
+  
+  public static void generateIcons(final ArrayList<String> videos) {
+    try {
+      int id = 0;
+      for (final String video : videos) {
+        {
+          String iconName = (("icon_" + Integer.valueOf(id)) + ".png");
+          String iconPath = ("outputs/icons/" + iconName);
+          Double duration = Utils.getDuration(video);
+          final double start = ((duration).doubleValue() / 2);
+          final double end = (start + 1);
+          final String command = ((((((("ffmpeg -y -i " + video) + " -r 1 -t ") + Double.valueOf(start)) + " -ss ") + Double.valueOf(end)) + " -vframes 1 ") + iconPath);
+          final Process p = Runtime.getRuntime().exec(command);
+          int _waitFor = p.waitFor();
+          boolean _notEquals = (_waitFor != 0);
+          if (_notEquals) {
+            try {
+              InputStream _errorStream = p.getErrorStream();
+              InputStreamReader _inputStreamReader = new InputStreamReader(_errorStream);
+              final BufferedReader stdInput = new BufferedReader(_inputStreamReader);
+              int c = 0;
+              while ((c > (-1))) {
+                {
+                  String line = "";
+                  line = stdInput.readLine();
+                  InputOutput.<String>println(line);
+                  c = stdInput.read();
+                }
+              }
+              return;
+            } catch (final Throwable _t) {
+              if (_t instanceof IOException) {
+                final IOException e = (IOException)_t;
+                System.err.println(e);
+              } else {
+                throw Exceptions.sneakyThrow(_t);
+              }
+            }
+          } else {
+            InputOutput.<String>println(((video + " icon is generated with name of ") + iconName));
+          }
+          id++;
+        }
+      }
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
 }

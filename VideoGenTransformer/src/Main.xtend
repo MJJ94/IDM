@@ -48,9 +48,14 @@ class Main {
 				}
 			}
 		}
-			var variants = Utils.calculateVariants(listMan, listOp, listAlt)
-			Utils.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
-			Utils.generateVideosSeq(variants)
-			Utils.runCommands();
+		var variants = Utils.calculateVariants(listMan, listOp, listAlt)
+		var videos = new ArrayList<String>()
+		videos.addAll(listMan)
+		videos.addAll(listOp)
+		videos.addAll(listAlt)
+		Utils.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
+		Utils.generateVideosSeq(variants)
+		Utils.generateIcons(videos)
+		Utils.runCommands();
 	}
 }

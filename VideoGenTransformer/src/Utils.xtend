@@ -275,4 +275,35 @@ class Utils {
 			}
 		}
 	}
+
+	def static void generateIcons(ArrayList<String> videos) {
+		var id = 0
+		for (String video : videos) {
+			var iconName = "icon_" + id + ".png"
+			var iconPath = "outputs/icons/" + iconName
+			var duration = getDuration(video)
+			val start = duration / 2
+			val end = start + 1
+			val command = "ffmpeg -y -i " + video + " -r 1 -t " + start + " -ss " + end + " -vframes 1 " + iconPath
+			val p = Runtime.runtime.exec(command)
+			if (p.waitFor != 0) {
+				try {
+					val stdInput = new BufferedReader(new InputStreamReader(p.errorStream))
+					var c = 0
+					while (c > -1) {
+						var line = ""
+						line = stdInput.readLine()
+						println(line)
+						c = stdInput.read
+					}
+					return
+				} catch (IOException e) {
+					System.err.println(e)
+				}
+			} else {
+				println(video + " icon is generated with name of " + iconName)
+			}
+			id++
+		}
+	}
 }
