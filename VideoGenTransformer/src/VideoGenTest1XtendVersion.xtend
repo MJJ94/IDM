@@ -105,15 +105,21 @@ class VideoGenTest1XtendVersion {
 
 	def void cleanDirectories() {
 		val outputs = "./outputs/"
-		var results = new File("./results/")
+//		var results = new File("./results/")
 		var videoOutputs = new File(outputs + "videos/")
 		var gifsOutputs = new File(outputs + "gifs/")
 		var iconsOutputs = new File(outputs + "icons/")
 		var ArrayList<File> files = new ArrayList
-		files.addAll(results.listFiles)
-		files.addAll(videoOutputs.listFiles)
-		files.addAll(gifsOutputs.listFiles)
-		files.addAll(iconsOutputs.listFiles)
+//		files.addAll(results.listFiles)
+		if (videoOutputs.exists) {
+			files.addAll(videoOutputs.listFiles)
+		}
+		if (gifsOutputs.exists) {
+			files.addAll(gifsOutputs.listFiles)
+		}
+		if (iconsOutputs.exists) {
+			files.addAll(iconsOutputs.listFiles)
+		}
 		for (File file : files) {
 			Files.delete(Paths.get(file.path))
 		}
@@ -130,7 +136,7 @@ class VideoGenTest1XtendVersion {
 	def void nbLinesCSV() {
 		initTest("only_alternatives.videogen")
 		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
-		val String csvPath = CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt)
+		val String csvPath = CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt,"")
 		val nbLinesCsv = nbLinesCSV(csvPath)
 		assertEquals(nbLinesCsv, nbVariants, 0)
 	}
@@ -157,7 +163,7 @@ class VideoGenTest1XtendVersion {
 		allVideos.addAll(listOp)
 		allVideos.addAll(listAlt)
 
-		OutPutsGenerator.generateIcons(allVideos)
+		OutPutsGenerator.generateIcons(allVideos, "")
 		val nbIcons = getNbIcons()
 
 		assertEquals(allVideos.size(), nbIcons, 0)

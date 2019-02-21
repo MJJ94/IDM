@@ -101,10 +101,10 @@ class Variants {
 		return result;
 	}
 	
-	def static Double getDurations(ArrayList<String> videos) {
+	def static Double getDurations(ArrayList<String> videos, String parentDir) {
 		var result = 0.0
 		for (String video : videos) {
-			val duration = getDuration(video)
+			val duration = getDuration(parentDir + video)
 			result += duration
 		}
 		return result

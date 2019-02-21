@@ -124,11 +124,11 @@ public class Variants {
     return result;
   }
   
-  public static Double getDurations(final ArrayList<String> videos) {
+  public static Double getDurations(final ArrayList<String> videos, final String parentDir) {
     double result = 0.0;
     for (final String video : videos) {
       {
-        final Double duration = Variants.getDuration(video);
+        final Double duration = Variants.getDuration((parentDir + video));
         double _result = result;
         result = (_result + (duration).doubleValue());
       }

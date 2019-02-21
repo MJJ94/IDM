@@ -143,15 +143,22 @@ public class VideoGenTest1XtendVersion {
   public void cleanDirectories() {
     try {
       final String outputs = "./outputs/";
-      File results = new File("./results/");
       File videoOutputs = new File((outputs + "videos/"));
       File gifsOutputs = new File((outputs + "gifs/"));
       File iconsOutputs = new File((outputs + "icons/"));
       ArrayList<File> files = new ArrayList<File>();
-      CollectionExtensions.<File>addAll(files, results.listFiles());
-      CollectionExtensions.<File>addAll(files, videoOutputs.listFiles());
-      CollectionExtensions.<File>addAll(files, gifsOutputs.listFiles());
-      CollectionExtensions.<File>addAll(files, iconsOutputs.listFiles());
+      boolean _exists = videoOutputs.exists();
+      if (_exists) {
+        CollectionExtensions.<File>addAll(files, videoOutputs.listFiles());
+      }
+      boolean _exists_1 = gifsOutputs.exists();
+      if (_exists_1) {
+        CollectionExtensions.<File>addAll(files, gifsOutputs.listFiles());
+      }
+      boolean _exists_2 = iconsOutputs.exists();
+      if (_exists_2) {
+        CollectionExtensions.<File>addAll(files, iconsOutputs.listFiles());
+      }
       for (final File file : files) {
         Files.delete(Paths.get(file.getPath()));
       }
@@ -171,7 +178,7 @@ public class VideoGenTest1XtendVersion {
   public void nbLinesCSV() {
     this.initTest("only_alternatives.videogen");
     final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
-    final String csvPath = CsvTxtGenerator.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt);
+    final String csvPath = CsvTxtGenerator.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt, "");
     final int nbLinesCsv = this.nbLinesCSV(csvPath);
     Assert.assertEquals(nbLinesCsv, nbVariants, 0);
   }
@@ -195,7 +202,7 @@ public class VideoGenTest1XtendVersion {
     allVideos.addAll(this.listMan);
     allVideos.addAll(this.listOp);
     allVideos.addAll(this.listAlt);
-    OutPutsGenerator.generateIcons(allVideos);
+    OutPutsGenerator.generateIcons(allVideos, "");
     final int nbIcons = this.getNbIcons();
     Assert.assertEquals(allVideos.size(), nbIcons, 0);
   }

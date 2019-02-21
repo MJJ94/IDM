@@ -1,5 +1,3 @@
-
-
 import java.util.ArrayList
 import java.util.HashMap
 import java.text.DateFormat
@@ -9,18 +7,26 @@ import java.text.SimpleDateFormat
 import java.io.FileWriter
 import java.io.IOException
 import java.util.Random
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class CsvTxtGenerator {
-		def static String generateCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
-		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt) {
+	def static String generateCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
+		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt, String parentDir) {
 		var DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
 		var Date date = new Date();
 		var BufferedWriter writer;
 		val fileName = "result-" + df.format(date) + ".csv"
-		val filePath = "./results/" + fileName
+		val resultsDirPath = parentDir + "results"
+		try {
+			Files.createDirectories(Paths.get(resultsDirPath))
+		} catch (Exception e) {
+			System.err.println(e)
+		}
+		val filePath = resultsDirPath + "/" + fileName
 		try {
 			writer = new BufferedWriter(new FileWriter(filePath))
-			writer.write(toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
+			writer.write(toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt, parentDir));
 			writer.flush()
 			writer.close()
 			return filePath
@@ -31,7 +37,7 @@ class CsvTxtGenerator {
 	}
 
 	def static String toCSV(ArrayList<ArrayList<String>> variantes, HashMap<String, Long> mapMediaSizes,
-		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt) {
+		ArrayList<String> listMan, ArrayList<String> listOpt, ArrayList<String> listAlt, String parentDir) {
 		var String separator = ";";
 		var String separatorLine = "\n";
 		var StringBuilder stringBuilder = new StringBuilder();
@@ -85,7 +91,7 @@ class CsvTxtGenerator {
 			stringBuilder.append(totalSize)
 			stringBuilder.append(separator)
 
-			totalDuration = Variants.getDurations(l)
+			totalDuration = Variants.getDurations(l, parentDir)
 			stringBuilder.append(totalDuration)
 			stringBuilder.append(separatorLine)
 
@@ -93,11 +99,11 @@ class CsvTxtGenerator {
 		}
 		return stringBuilder.toString();
 	}
-	
-		def static void generateVideosSeq(ArrayList<ArrayList<String>> variantes) {
+
+	def static void generateVideosSeq(ArrayList<ArrayList<String>> variantes, String parentDir) {
 		var BufferedWriter writer;
 		try {
-			writer = new BufferedWriter(new FileWriter("./videos" + ".txt"))
+			writer = new BufferedWriter(new FileWriter( parentDir + "videos" + ".txt"))
 			writer.write(toTxt(variantes));
 			writer.flush()
 			writer.close()

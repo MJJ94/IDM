@@ -1,6 +1,8 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,34 +13,45 @@ import org.eclipse.xtext.xbase.lib.Exceptions;
 
 @SuppressWarnings("all")
 public class CsvTxtGenerator {
-  public static String generateCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
+  public static String generateCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt, final String parentDir) {
     DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
     Date date = new Date();
     BufferedWriter writer = null;
     String _format = df.format(date);
     String _plus = ("result-" + _format);
     final String fileName = (_plus + ".csv");
-    final String filePath = ("./results/" + fileName);
+    final String resultsDirPath = (parentDir + "results");
     try {
-      FileWriter _fileWriter = new FileWriter(filePath);
-      BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
-      writer = _bufferedWriter;
-      writer.write(CsvTxtGenerator.toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt));
-      writer.flush();
-      writer.close();
-      return filePath;
+      Files.createDirectories(Paths.get(resultsDirPath));
     } catch (final Throwable _t) {
-      if (_t instanceof IOException) {
-        final IOException exception = (IOException)_t;
-        System.err.println(exception);
-        return null;
+      if (_t instanceof Exception) {
+        final Exception e = (Exception)_t;
+        System.err.println(e);
       } else {
         throw Exceptions.sneakyThrow(_t);
       }
     }
+    final String filePath = ((resultsDirPath + "/") + fileName);
+    try {
+      FileWriter _fileWriter = new FileWriter(filePath);
+      BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
+      writer = _bufferedWriter;
+      writer.write(CsvTxtGenerator.toCSV(variantes, mapMediaSizes, listMan, listOpt, listAlt, parentDir));
+      writer.flush();
+      writer.close();
+      return filePath;
+    } catch (final Throwable _t_1) {
+      if (_t_1 instanceof IOException) {
+        final IOException exception = (IOException)_t_1;
+        System.err.println(exception);
+        return null;
+      } else {
+        throw Exceptions.sneakyThrow(_t_1);
+      }
+    }
   }
   
-  public static String toCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt) {
+  public static String toCSV(final ArrayList<ArrayList<String>> variantes, final HashMap<String, Long> mapMediaSizes, final ArrayList<String> listMan, final ArrayList<String> listOpt, final ArrayList<String> listAlt, final String parentDir) {
     String separator = ";";
     String separatorLine = "\n";
     StringBuilder stringBuilder = new StringBuilder();
@@ -93,7 +106,7 @@ public class CsvTxtGenerator {
         }
         stringBuilder.append(totalSize);
         stringBuilder.append(separator);
-        totalDuration = Variants.getDurations(l);
+        totalDuration = Variants.getDurations(l, parentDir);
         stringBuilder.append(totalDuration);
         stringBuilder.append(separatorLine);
         id++;
@@ -102,10 +115,10 @@ public class CsvTxtGenerator {
     return stringBuilder.toString();
   }
   
-  public static void generateVideosSeq(final ArrayList<ArrayList<String>> variantes) {
+  public static void generateVideosSeq(final ArrayList<ArrayList<String>> variantes, final String parentDir) {
     BufferedWriter writer = null;
     try {
-      FileWriter _fileWriter = new FileWriter(("./videos" + ".txt"));
+      FileWriter _fileWriter = new FileWriter(((parentDir + "videos") + ".txt"));
       BufferedWriter _bufferedWriter = new BufferedWriter(_fileWriter);
       writer = _bufferedWriter;
       writer.write(CsvTxtGenerator.toTxt(variantes));
