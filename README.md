@@ -28,4 +28,4 @@ VideoGen ainsi que quelques outils pour raisonner sur la durée et taille des vi
 
 ## Difficultés rencontrées : 
 
-La prise en main de ffmpeg n'a pas été facile, nous avons eu des problèmes après la génération des vidéo liés à la qualité de la vidéo généré . 
+La prise en main de ffmpeg n'a pas été facile, nous avons eu des problèmes après la génération des vidéo liés à la qualité de la vidéo généré. 
