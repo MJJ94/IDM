@@ -26,6 +26,7 @@ Nous avons testé nous méthodes implémentés via des testes fonctionnels et à
 
 Après avoir générer une liste de variantes, nous exécutons ffmpeg pour  générer la concaténation des variantes. Nous générons aussi un GIF ainsi qu’un fichier CSV qui contient toutes la variantes avec un attribut TRUE ou FALSE pour indiquer si elles sont présentes dans la liste générée. Le fichier CSV contient aussi la taille et la durée totale des variantes. 
 
+
 Voici un exemple d'un fichier CSV généré: 
 
 ![GitHub Logo](/screenCSV_File_IDM.png)
@@ -37,6 +38,12 @@ Voici un exemple d'un fichier CSV généré:
   * traitement/filtres sur les vidéos.
   * outil d’analyse pour produire les durées des variantes.
   * outil d’analyse pour produire les tailles des variantes.
+  
+ ## Test et évaluation : 
+ 
+  Pour tester notre outils et notre code implémenté nous avons pris les vidéos des autres binômes et nous avons tester leurs variantes sur notre projet en lançant le main "videoGenTest1.java". Après l’exécution, nous générons bien des vidéos, des images et des GIF et nous avons eu aucune erreurs durant l’exécution. 
+ 
+
 
 ## Difficultés rencontrées : 
 * Le plus difficile de ce projet, c’était de comprendre le sujet et la grammaire. Dans le cas pour gérer les optionnelles, nous avons hésité entre les mettre une seule fois dans la vidéo générée ou plusieurs fois. Au final nous avons décidé de les mettre plusieurs fois et la taille de la variante est 2^⁽nb optionnelles). 
