@@ -19,7 +19,7 @@ avec des probabilités. Les créateurs de générateurs de vidéos pourront util
 VideoGen ainsi que quelques outils pour raisonner sur la durée et taille des vidéos.
 
 ## Fonctionnalités du générateur : 
-	* concaténation des séquences vidéos avec ffmpeg. 
+  * concaténation des séquences vidéos avec ffmpeg. 
   * gestion des probabilités lors du tirage aléatoire des variantes. 
   * export GIF des variantes vidéo.
   * traitement/filtres sur les vidéos.
