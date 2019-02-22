@@ -25,3 +25,7 @@ VideoGen ainsi que quelques outils pour raisonner sur la durée et taille des vi
   * traitement/filtres sur les vidéos.
   * outil d’analyse pour produire les durées des variantes.
   * outil d’analyse pour produire les tailles des variantes.
+
+## Difficultés rencontrées : 
+
+La prise en main de ffmpeg n'a pas été facile, nous avons eu des problèmes après la génération des vidéo liés à la qualité de la vidéo généré . 
