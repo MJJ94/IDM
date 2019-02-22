@@ -12,7 +12,7 @@
 
 ## Introduction :
 
-	 L’objectif du projet est d’offrir une solution logicielle pour déployer un générateur ou
+L’objectif du projet est d’offrir une solution logicielle pour déployer un générateur ou
 Web de vidéos à partir d’une spécification textuelle (VideoGen). Les utilisateurs
 du site Web pourront par exemple visualiser des variantes de vidéos générées aléatoirement ou
 avec des probabilités. Les créateurs de générateurs de vidéos pourront utiliser le langage
