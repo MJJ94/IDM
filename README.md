@@ -2,5 +2,5 @@
 
 ## Binôme 
 
-Jammal Mahmoud
-Moutarajji Mouhyi
+* Jammal Mahmoud
+* Moutarajji Mouhyi
