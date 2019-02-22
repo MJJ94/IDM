@@ -17,3 +17,11 @@ Web de vidéos à partir d’une spécification textuelle (VideoGen). Les utilis
 du site Web pourront par exemple visualiser des variantes de vidéos générées aléatoirement ou
 avec des probabilités. Les créateurs de générateurs de vidéos pourront utiliser le langage
 VideoGen ainsi que quelques outils pour raisonner sur la durée et taille des vidéos.
+
+## Fonctionnalités du générateur : 
+	* concaténation des séquences vidéos avec ffmpeg. 
+  * gestion des probabilités lors du tirage aléatoire des variantes. 
+  * export GIF des variantes vidéo.
+  * traitement/filtres sur les vidéos.
+  * outil d’analyse pour produire les durées des variantes.
+  * outil d’analyse pour produire les tailles des variantes.
