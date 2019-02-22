@@ -41,7 +41,7 @@ Voici un exemple d'un fichier CSV généré:
   
  ## Test et évaluation : 
  
-  Pour tester notre outils et notre code implémenté nous avons pris les vidéos des autres binômes et nous avons tester leurs variantes sur notre projet en lançant le main "videoGenTest1.java". Après l’exécution, nous générons bien des vidéos, des images et des GIF et nous avons eu aucune erreurs durant l’exécution. 
+  Pour tester notre outil et notre code implémenté nous avons pris les vidéos des autres binômes et nous avons tester leurs variantes sur notre projet en lançant le main "videoGenTest1.java". Après l’exécution, nous générons bien des vidéos, des images et des GIF et nous avons eu aucune erreurs durant l’exécution. 
  
 
 
