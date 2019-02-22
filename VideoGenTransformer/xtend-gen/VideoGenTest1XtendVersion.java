@@ -34,6 +34,8 @@ public class VideoGenTest1XtendVersion {
   
   private ArrayList<ArrayList<String>> variants = new ArrayList<ArrayList<String>>();
   
+  private String parentDir = "specifications/JAMMAL_MOUTARAJJI/";
+  
   public void initTest(final String specification) {
     ArrayList<String> _arrayList = new ArrayList<String>();
     this.listMan = _arrayList;
@@ -44,7 +46,7 @@ public class VideoGenTest1XtendVersion {
     HashMap<String, Long> _hashMap = new HashMap<String, Long>();
     this.mapSizes = _hashMap;
     this.cleanDirectories();
-    final VideoGeneratorModel videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI(specification));
+    final VideoGeneratorModel videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI((this.parentDir + specification)));
     EList<Media> _medias = videoGen.getMedias();
     for (final Media m : _medias) {
       if ((m instanceof MandatoryMedia)) {
@@ -142,7 +144,7 @@ public class VideoGenTest1XtendVersion {
   
   public void cleanDirectories() {
     try {
-      final String outputs = "./outputs/";
+      final String outputs = (this.parentDir + "outputs/");
       File videoOutputs = new File((outputs + "videos/"));
       File gifsOutputs = new File((outputs + "gifs/"));
       File iconsOutputs = new File((outputs + "icons/"));
@@ -169,23 +171,23 @@ public class VideoGenTest1XtendVersion {
   
   @Test
   public void nbVariants() {
-    this.initTest("only_alternatives.videogen");
+    this.initTest("specification.videogen");
     final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
     Assert.assertEquals(nbVariants, this.variants.size(), 0);
   }
   
   @Test
   public void nbLinesCSV() {
-    this.initTest("only_alternatives.videogen");
+    this.initTest("specification.videogen");
     final int nbVariants = this.nbVariants(this.listMan.size(), this.listOp.size(), this.listAlt.size());
-    final String csvPath = CsvTxtGenerator.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt, "");
+    final String csvPath = CsvTxtGenerator.generateCSV(this.variants, this.mapSizes, this.listMan, this.listOp, this.listAlt, this.parentDir);
     final int nbLinesCsv = this.nbLinesCSV(csvPath);
     Assert.assertEquals(nbLinesCsv, nbVariants, 0);
   }
   
   public int getNbIcons() {
     int result = 0;
-    final String iconFolderPath = "./outputs/icons/";
+    final String iconFolderPath = (this.parentDir + "outputs/icons/");
     File iconFolder = new File(iconFolderPath);
     File[] _listFiles = iconFolder.listFiles();
     ArrayList<File> icons = new ArrayList<File>((Collection<? extends File>)Conversions.doWrapArray(_listFiles));
@@ -202,7 +204,7 @@ public class VideoGenTest1XtendVersion {
     allVideos.addAll(this.listMan);
     allVideos.addAll(this.listOp);
     allVideos.addAll(this.listAlt);
-    OutPutsGenerator.generateIcons(allVideos, "");
+    OutPutsGenerator.generateIcons(allVideos, this.parentDir);
     final int nbIcons = this.getNbIcons();
     Assert.assertEquals(allVideos.size(), nbIcons, 0);
   }

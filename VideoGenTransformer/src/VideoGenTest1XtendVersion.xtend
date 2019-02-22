@@ -23,14 +23,14 @@ class VideoGenTest1XtendVersion {
 	var private listAlt = new ArrayList<String>();
 	var private mapSizes = new HashMap<String, Long>
 	var private variants = new ArrayList<ArrayList<String>>
-
+	var private String parentDir = "specifications/JAMMAL_MOUTARAJJI/"
 	def void initTest(String specification) {
 		this.listMan = new ArrayList<String>();
 		this.listOp = new ArrayList<String>();
 		this.listAlt = new ArrayList<String>();
 		this.mapSizes = new HashMap<String, Long>
 		cleanDirectories()
-		val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI(specification))
+		val videoGen = new VideoGenHelper().loadVideoGenerator(URI.createURI(parentDir + specification))
 		for (Media m : videoGen.medias) {
 			if (m instanceof MandatoryMedia) {
 				val man = m as MandatoryMedia
@@ -104,7 +104,7 @@ class VideoGenTest1XtendVersion {
 	}
 
 	def void cleanDirectories() {
-		val outputs = "./outputs/"
+		val outputs = parentDir + "outputs/"
 //		var results = new File("./results/")
 		var videoOutputs = new File(outputs + "videos/")
 		var gifsOutputs = new File(outputs + "gifs/")
@@ -127,23 +127,23 @@ class VideoGenTest1XtendVersion {
 
 	@Test
 	def void nbVariants() {
-		initTest("only_alternatives.videogen")
+		initTest("specification.videogen")
 		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
 		assertEquals(nbVariants, variants.size(), 0)
 	}
 
 	@Test
 	def void nbLinesCSV() {
-		initTest("only_alternatives.videogen")
+		initTest("specification.videogen")
 		val nbVariants = nbVariants(listMan.size(), listOp.size(), listAlt.size)
-		val String csvPath = CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt,"")
+		val String csvPath = CsvTxtGenerator.generateCSV(variants, mapSizes, listMan, listOp, listAlt, parentDir)
 		val nbLinesCsv = nbLinesCSV(csvPath)
 		assertEquals(nbLinesCsv, nbVariants, 0)
 	}
 
 	def int getNbIcons() {
 		var int result = 0
-		val iconFolderPath = "./outputs/icons/"
+		val iconFolderPath = parentDir + "outputs/icons/"
 		var iconFolder = new File(iconFolderPath)
 		var ArrayList<File> icons = new ArrayList(iconFolder.listFiles)
 
@@ -163,7 +163,7 @@ class VideoGenTest1XtendVersion {
 		allVideos.addAll(listOp)
 		allVideos.addAll(listAlt)
 
-		OutPutsGenerator.generateIcons(allVideos, "")
+		OutPutsGenerator.generateIcons(allVideos, parentDir)
 		val nbIcons = getNbIcons()
 
 		assertEquals(allVideos.size(), nbIcons, 0)

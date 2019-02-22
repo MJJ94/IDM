@@ -38,24 +38,15 @@ class OutPutsGenerator {
 			outPutGifPath + "/" + outPutGifName + " -hide_banner"
 		println("Generating " + outPutVideoPath + "/" + outPutVideoName)
 		var p = Runtime.runtime.exec(videoCommand)
-		try {
-			val stdInput = new BufferedReader(new InputStreamReader(p.inputStream))
-			var c = 0
-			while (c > -1) {
-				var line = ""
-				line = stdInput.readLine()
-				println(line)
-				c = stdInput.read
-			}
-		} catch (IOException e) {
-			System.err.println(e)
-		}
+
 		if (p.waitFor == 0) {
 			println(outPutVideoPath + outPutVideoName + " is generated")
+			println()
 			println("Generating " + outPutGifPath + "/" + outPutGifName)
 			var gifP = Runtime.runtime.exec(gifCommand)
 			if (gifP.waitFor == 0) {
 				println(outPutGifPath + "/" + outPutGifName + "is generated")
+				println()
 				if (playVideo) {
 					var vlcP = Runtime.runtime.exec(playVideoCommand)
 					vlcP.waitFor == 0
@@ -65,10 +56,12 @@ class OutPutsGenerator {
 			try {
 				val stdInput = new BufferedReader(new InputStreamReader(p.errorStream))
 				var c = 0
+				var ArrayList<String> lines = new ArrayList<String>
 				while (c > -1) {
 					var line = ""
 					line = stdInput.readLine()
 					println(line)
+					lines.add(line)
 					c = stdInput.read
 				}
 				return

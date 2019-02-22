@@ -103,7 +103,7 @@ class CsvTxtGenerator {
 	def static void generateVideosSeq(ArrayList<ArrayList<String>> variantes, String parentDir) {
 		var BufferedWriter writer;
 		try {
-			writer = new BufferedWriter(new FileWriter( parentDir + "videos" + ".txt"))
+			writer = new BufferedWriter(new FileWriter(parentDir + "videos" + ".txt"))
 			writer.write(toTxt(variantes));
 			writer.flush()
 			writer.close()
@@ -115,9 +115,14 @@ class CsvTxtGenerator {
 	def static String toTxt(ArrayList<ArrayList<String>> variantes) {
 		var String separatorLine = "\n";
 		var StringBuilder stringBuilder = new StringBuilder();
-		var Random random = new Random()
-		var randomIndex = random.nextInt(variantes.size - 1)
-		var randomVar = variantes.get(randomIndex)
+		var ArrayList<String> randomVar = new ArrayList<String>
+		if (variantes.size > 1) {
+			var Random random = new Random()
+			var randomIndex = random.nextInt(variantes.size - 1)
+			randomVar = variantes.get(randomIndex)
+		} else {
+			randomVar = variantes.get(0)
+		}
 		for (String elem : randomVar) {
 			stringBuilder.append("file '" + elem + "'");
 			stringBuilder.append(separatorLine)

@@ -52,37 +52,18 @@ public class OutPutsGenerator {
       final String gifCommand = (((((((("ffmpeg -i " + outPutVideoPath) + "/") + outPutVideoName) + " -r 120 -vf scale=360:-1 ") + outPutGifPath) + "/") + outPutGifName) + " -hide_banner");
       InputOutput.<String>println(((("Generating " + outPutVideoPath) + "/") + outPutVideoName));
       Process p = Runtime.getRuntime().exec(videoCommand);
-      try {
-        InputStream _inputStream = p.getInputStream();
-        InputStreamReader _inputStreamReader = new InputStreamReader(_inputStream);
-        final BufferedReader stdInput = new BufferedReader(_inputStreamReader);
-        int c = 0;
-        while ((c > (-1))) {
-          {
-            String line = "";
-            line = stdInput.readLine();
-            InputOutput.<String>println(line);
-            c = stdInput.read();
-          }
-        }
-      } catch (final Throwable _t_2) {
-        if (_t_2 instanceof IOException) {
-          final IOException e_2 = (IOException)_t_2;
-          System.err.println(e_2);
-        } else {
-          throw Exceptions.sneakyThrow(_t_2);
-        }
-      }
       int _waitFor = p.waitFor();
       boolean _equals = (_waitFor == 0);
       if (_equals) {
         InputOutput.<String>println(((outPutVideoPath + outPutVideoName) + " is generated"));
+        InputOutput.println();
         InputOutput.<String>println(((("Generating " + outPutGifPath) + "/") + outPutGifName));
         Process gifP = Runtime.getRuntime().exec(gifCommand);
         int _waitFor_1 = gifP.waitFor();
         boolean _equals_1 = (_waitFor_1 == 0);
         if (_equals_1) {
           InputOutput.<String>println((((outPutGifPath + "/") + outPutGifName) + "is generated"));
+          InputOutput.println();
           if (playVideo) {
             Process vlcP = Runtime.getRuntime().exec(playVideoCommand);
             int _waitFor_2 = vlcP.waitFor();
@@ -92,24 +73,26 @@ public class OutPutsGenerator {
       } else {
         try {
           InputStream _errorStream = p.getErrorStream();
-          InputStreamReader _inputStreamReader_1 = new InputStreamReader(_errorStream);
-          final BufferedReader stdInput_1 = new BufferedReader(_inputStreamReader_1);
-          int c_1 = 0;
-          while ((c_1 > (-1))) {
+          InputStreamReader _inputStreamReader = new InputStreamReader(_errorStream);
+          final BufferedReader stdInput = new BufferedReader(_inputStreamReader);
+          int c = 0;
+          ArrayList<String> lines = new ArrayList<String>();
+          while ((c > (-1))) {
             {
               String line = "";
-              line = stdInput_1.readLine();
+              line = stdInput.readLine();
               InputOutput.<String>println(line);
-              c_1 = stdInput_1.read();
+              lines.add(line);
+              c = stdInput.read();
             }
           }
           return;
-        } catch (final Throwable _t_3) {
-          if (_t_3 instanceof IOException) {
-            final IOException e_3 = (IOException)_t_3;
-            System.err.println(e_3);
+        } catch (final Throwable _t_2) {
+          if (_t_2 instanceof IOException) {
+            final IOException e_2 = (IOException)_t_2;
+            System.err.println(e_2);
           } else {
-            throw Exceptions.sneakyThrow(_t_3);
+            throw Exceptions.sneakyThrow(_t_2);
           }
         }
       }

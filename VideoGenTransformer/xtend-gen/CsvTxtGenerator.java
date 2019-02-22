@@ -137,11 +137,18 @@ public class CsvTxtGenerator {
   public static String toTxt(final ArrayList<ArrayList<String>> variantes) {
     String separatorLine = "\n";
     StringBuilder stringBuilder = new StringBuilder();
-    Random random = new Random();
+    ArrayList<String> randomVar = new ArrayList<String>();
     int _size = variantes.size();
-    int _minus = (_size - 1);
-    int randomIndex = random.nextInt(_minus);
-    ArrayList<String> randomVar = variantes.get(randomIndex);
+    boolean _greaterThan = (_size > 1);
+    if (_greaterThan) {
+      Random random = new Random();
+      int _size_1 = variantes.size();
+      int _minus = (_size_1 - 1);
+      int randomIndex = random.nextInt(_minus);
+      randomVar = variantes.get(randomIndex);
+    } else {
+      randomVar = variantes.get(0);
+    }
     for (final String elem : randomVar) {
       {
         stringBuilder.append((("file \'" + elem) + "\'"));
