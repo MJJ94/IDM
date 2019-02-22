@@ -25,8 +25,7 @@ Avant de commencer de développer l’outil qui génère les variantes, nous avo
 Nous avons testé nous méthodes implémentés via des testes fonctionnels et à l’aide aux tableaux mathématiques de logique. 
 
 Après avoir générer une liste de variantes, nous exécutons ffmpeg pour  générer la concaténation des variantes. Nous générons aussi un GIF ainsi qu’un fichier CSV qui contient toutes la variantes avec un attribut TRUE ou FALSE pour indiquer si elles sont présentes dans la liste générée. Le fichier CSV contient aussi la taille et la durée totale des variantes. 
-
-[exemple](/screenCSV_File_IDM)
+![GitHub Logo](/screenCSV_File_IDM.png)
 
 ## Fonctionnalités du générateur : 
   * concaténation des séquences vidéos avec ffmpeg. 
